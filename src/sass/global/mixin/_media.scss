@@ -1,0 +1,33 @@
+// もし#{}(interpolation)が無い場合、「 @media map-get~ 」という記述なのでCSS構文エラーという扱いになってしまうため、#{}が必要。
+// 説明：https: //tenderfeel.github.io/SassReference/sass-script/interpolation.html
+
+$breakpoints: (
+	sp: "(max-width: 768px)",
+	tab: "(min-width: 768px)",
+	pc: "(min-width: 1100px)",
+);
+
+@mixin mq($bp) {
+	@media #{map-get($breakpoints, $bp)} {
+		@content;
+	}
+}
+
+// 別パターン（動作は同じ）
+// @mixin sp {
+// 	@media (max-width: 375px) {
+// 		@content;
+// 	}
+// }
+
+// @mixin tab {
+// 	@media (min-width: 768px) {
+// 		@content;
+// 	}
+// }
+
+// @mixin pc {
+// 	@media (min-width: 1440px) {
+// 		@content;
+// 	}
+// }

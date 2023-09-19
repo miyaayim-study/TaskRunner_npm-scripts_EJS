@@ -1,0 +1,2 @@
+#gitではnode_modulesを除外する
+*node_modules/

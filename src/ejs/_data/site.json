@@ -1,0 +1,19 @@
+{
+  "siteInfo": {
+    "siteTitle": "〇〇会社"
+  },
+  "pages": {
+    "top": {
+      "dir": "",
+      "name": "top",
+      "pageTitle": "〇〇会社",
+      "description": ""
+    },
+    "about": {
+      "dir": "../",
+      "name": "about",
+      "pageTitle": "〇〇会社について",
+      "description": "〇〇会社について"
+    }
+  }
+}

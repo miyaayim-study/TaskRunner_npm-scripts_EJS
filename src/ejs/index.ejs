@@ -1,0 +1,30 @@
+<%# ページIDを入力する %>
+<% pageId = 'top'; %>
+
+<%# グローバル変数（全部に渡す） %>
+<%
+baseUrl = json.pages[pageId].dir;
+imgUrl = baseUrl + 'assts/imagees/';
+%>
+
+<%# ヘッド %>
+<%- include(json.pages[pageId].dir + '_common/_head.ejs') %>
+
+<%# ヘッダー %>
+<%- include(json.pages[pageId].dir + '_common/_header.ejs') %>
+
+<!-- main -->
+<main class="l-main">
+  <h2>top</h2>
+  <p>テキスト</p>
+</main>
+
+<%# フッター %>
+<%- include(json.pages[pageId].dir + '_common/_footer.ejs') %>
+
+<%# スクリプト %>
+<script>
+  const hoge = 'TEST'
+  console.log(hoge);
+</script>
+<%- include(json.pages[pageId].dir + '_common/_script.ejs') %>
