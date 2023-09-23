@@ -5,6 +5,7 @@ import path from 'path'; // パス操作のためのモジュールをインポ�
 import * as sass from 'sass'; // Sassコンパイラのモジュールをインポート
 import postcss from 'postcss'; // PostCSSのモジュールをインポート
 import autoprefixer from 'autoprefixer'; // 自動プレフィックスを追加するPostCSSプラグインをインポート
+// import cssnano from 'cssnano'; // CSSファイル圧縮のためのPostCSSプラグイン
 import chalk from 'chalk'; // ログのテキストを装飾する
 import stylelint from './stylelint.mjs';
 

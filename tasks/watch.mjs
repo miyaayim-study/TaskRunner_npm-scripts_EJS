@@ -2,10 +2,9 @@ import chokidar from 'chokidar';
 import { reload } from './server.mjs';
 import chalk from 'chalk'; // ログのテキストを装飾する
 
-const watchTask = async ({ src, task, mode }) => {
-  const inputPaths = src;
+const watchTask = async ({ watchSrc, task, taskSrc, taskDist, mode }) => {
+  const inputPaths = watchSrc;
   const taskFunction = task;
-  const taskMode = mode;
 
   try {
     const options = {
@@ -17,7 +16,7 @@ const watchTask = async ({ src, task, mode }) => {
       const watchEvent = event;
       const watchPath = path;
       try {
-        await taskFunction({ mode: taskMode, watchEvent: watchEvent, watchPath: watchPath }); // タスクを非同期で実行し、完了を待つ
+        await taskFunction({ src: taskSrc, dist: taskDist, mode: mode, watchEvent: watchEvent, watchPath: watchPath }); // タスクを非同期で実行し、完了を待つ
         // 監視イベントがフォルダの追加・削除の場合はリロードしない（フォルダ内にファイルが存在する場合は、'add'or'unlink'のイベントが検出されるのでリロードされます）
         // フォルダ操作だけでリロードが発生するのがストレスだったため条件分岐を行った。
         if (!(watchEvent === 'addDir' || watchEvent === 'unlinkDir')) {
