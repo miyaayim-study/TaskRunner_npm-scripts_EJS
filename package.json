@@ -1,7 +1,6 @@
 {
   "name": "task-runner_npm-scripts_ejs",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "node tasks/index.mjs development",
@@ -27,6 +26,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "devDependencies": {
     "autoprefixer": "^10.4.15",
     "browser-sync": "^2.29.3",
