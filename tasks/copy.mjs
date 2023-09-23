@@ -41,12 +41,18 @@ const copyTask = async ({ src, dist, watchEvent, watchPath }) => {
 
   try {
     // もし監視イベントが削除だった場合
-    if (watchEvent === 'unlink' || watchEvent === 'unlinkDir') {
+    if (
+      (watchEvent === 'unlink' || watchEvent === 'unlinkDir') &&
+      !path.basename(watchPath).startsWith('_')
+    ) {
       deleteDist();
     } else {
       // 監視タスクからの場合は、監視で検知したファイルのみをコピー（監視タスクで受け取るwatchPathがあるかないかで判断してる）
       if (watchPath) {
-        if ((watchEvent === 'add' || watchEvent === 'change')) {
+        if (
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          !path.basename(watchPath).startsWith('_')
+        ) {
           // 監視イベントが追加か変更かつ、それがEJSファイルだった場合に実行
           await copyFile({ copyFilePath: watchPath });
           await console.log(chalk.green('Copy processing task completed.'));

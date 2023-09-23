@@ -23,10 +23,10 @@ import { server } from './server.mjs';
 import eslint from './eslint.mjs';
 import stylelint from './stylelint.mjs';
 // import copyTask from './copy.mjs';
-import copyHtmlTask from './copyHtml.mjs';
-import copyPhpTask from './copyPhp.mjs';
-import copyCssTask from './copyCss.mjs';
-import copyJsTask from './copyJs.mjs';
+// import copyHtmlTask from './copyHtml.mjs';
+// import copyPhpTask from './copyPhp.mjs';
+// import copyCssTask from './copyCss.mjs';
+// import copyJsTask from './copyJs.mjs';
 
 /************************************************
 execution
@@ -54,12 +54,12 @@ const execution = async (mode, type) => {
     if (mode === 'development' || mode === 'build') {
       // 各タスクを並列で実行
       await Promise.all([
-        // executeTask({ task: ejsTask, mode: mode }),
-        // executeTask({ task: sassTask, mode: mode }),
-        // executeTask({ task: jsTask, mode: mode }),
-        // executeTask({ task: imgTask, mode: mode }),
+        executeTask({ task: ejsTask, mode: mode }),
+        executeTask({ task: sassTask, mode: mode }),
+        executeTask({ task: jsTask, mode: mode }),
+        executeTask({ task: imgTask, mode: mode }),
         // executeTask({ task: copyHtmlTask, mode: mode }),
-        executeTask({ task: copyPhpTask, mode: mode }),
+        // executeTask({ task: copyPhpTask, mode: mode }),
         // executeTask({ task: copyCssTask, mode: mode }),
         // executeTask({ task: copyJsTask, mode: mode }),
       ]);
@@ -72,11 +72,10 @@ const execution = async (mode, type) => {
     if (mode === 'development') {
       await Promise.all([
         server(),
-        // watchTask({ watchSrc: dir.src.ejs, task: ejsTask }),
-        // watchTask({ watchSrc: path.join(dir.src.sass, '**/*.scss'), task: sassTask, mode: mode }),
-        // watchTask({ watchSrc: path.join(dir.src.js, '**/*.js'), task: jsTask, mode: mode }),
-        // watchTask({ watchSrc: dir.src.img, task: imgTask }),
-        // watchTask({ watchSrc: path.join(dir.src.sass, '**/*.scss'), task: sassTask, mode: mode }),
+        watchTask({ watchSrc: dir.src.ejs, task: ejsTask }),
+        watchTask({ watchSrc: path.join(dir.src.sass, '**/*.scss'), task: sassTask, mode: mode }),
+        watchTask({ watchSrc: path.join(dir.src.js, '**/*.js'), task: jsTask, mode: mode }),
+        watchTask({ watchSrc: dir.src.img, task: imgTask }),
         // watchTask({ watchSrc: dir.src.html, task: copyHtmlTask, mode: mode }),
         // watchTask({ watchSrc: dir.src.php, task: copyPhpTask, mode: mode }),
         // watchTask({ watchSrc: dir.src.css, task: copyCssTask, mode: mode }),
@@ -92,24 +91,24 @@ const execution = async (mode, type) => {
       if (type === 'sass') {
         await executeTask({ task: sassTask, mode: mode });
       }
-      // if (type === 'js') {
-      //   await executeTask({ task: jsTask, mode: mode });
-      // }
+      if (type === 'js') {
+        await executeTask({ task: jsTask, mode: mode });
+      }
       if (type === 'img') {
         await executeTask({ task: imgTask });
       }
-      if (type === 'html') {
-        await executeTask({ task: copyHtmlTask });
-      }
-      if (type === 'php') {
-        await executeTask({ task: copyPhpTask });
-      }
-      if (type === 'css') {
-        await executeTask({ task: copyCssTask });
-      }
-      if (type === 'js') {
-        await executeTask({ task: copyJsTask });
-      }
+      // if (type === 'html') {
+      //   await executeTask({ task: copyHtmlTask });
+      // }
+      // if (type === 'php') {
+      //   await executeTask({ task: copyPhpTask });
+      // }
+      // if (type === 'css') {
+      //   await executeTask({ task: copyCssTask });
+      // }
+      // if (type === 'js') {
+      //   await executeTask({ task: copyJsTask });
+      // }
     }
 
     if (mode === 'lint') {

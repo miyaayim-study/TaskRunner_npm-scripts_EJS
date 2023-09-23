@@ -1,17 +1,12 @@
+<% const ROOT = `${process.cwd()}/src/ejs`; %>
 <%# ページIDを入力する %>
 <% pageId = 'about'; %>
 
-<%# グローバル変数（全部に渡す） %>
-<%
-baseUrl = json.pages[pageId].dir;
-imgUrl = baseUrl + 'assets/images/';
-%>
-
 <%# ヘッド %>
-<%- include(json.pages[pageId].dir + '_common/_head.ejs') %>
+<%- include(`${ROOT}/_common/_head.ejs`) %>
 
 <%# ヘッダー %>
-<%- include(json.pages[pageId].dir + '_common/_header.ejs') %>
+<%- include(`${ROOT}/_common/_header.ejs`) %>
 
 <%# メイン %>
 <!-- main -->
@@ -20,11 +15,11 @@ imgUrl = baseUrl + 'assets/images/';
 </main>
 
 <%# フッター %>
-<%- include(json.pages[pageId].dir + '_common/_footer.ejs') %>
+<%- include(`${ROOT}/_common/_footer.ejs`) %>
 
 <%# スクリプト %>
 <script>
   const hoge = 'TEST';
   console.log(hoge);
 </script>
-<%- include(json.pages[pageId].dir + '_common/_script.ejs') %>
+<%- include(`${ROOT}/_common/_script.ejs`) %>

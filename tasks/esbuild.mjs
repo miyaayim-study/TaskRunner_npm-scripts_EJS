@@ -5,8 +5,9 @@ import { glob } from 'glob';
 import dir from './dir.mjs';
 import eslint from './eslint.mjs';
 import chalk from 'chalk'; // ログのテキストを装飾する
+import deleteTask from './delete.mjs';
 
-const jsTask = async ({ mode }) => {
+const jsTask = async ({ mode, watchEvent, watchPath }) => {
   const taskMode = mode;
   const inputBaseDir = dir.src.js;
   const outputBaseDir = dir.dist.js;
@@ -52,7 +53,16 @@ const jsTask = async ({ mode }) => {
     }
   };
 
-  try {
+  // 監視イベントで削除を受け取った場合の処理
+  const deleteDist = () => {
+    let srcPath;
+    srcPath = watchPath;
+    const distPath = path.join(outputBaseDir, path.relative(inputBaseDir, srcPath));
+    deleteTask({ mode: 'one', path: distPath });
+  };
+
+  const allBuild = async () => {
+    // 全てのファイルをビルド
     // src/js内の全てのJSファイルを取得
     const jsAllFilePathsPromise = glob(path.join(inputBaseDir, '**/*.js'), {
       windowsPathsNoEscape: true,
@@ -81,11 +91,48 @@ const jsTask = async ({ mode }) => {
     }
 
     // src/js内の'_'で始まるファイル名を除いた全てのJSファイルを一つずつ取り出しビルドする
-    const jsBuildPromises = jsFilePaths.map((jsFilePath) => jsBuild({ jsFilePath: jsFilePath }));
+    const jsBuildPromises = jsFilePaths.map((jsFilePath) =>
+      jsBuild({ jsFilePath: jsFilePath })
+    );
     // 並列実行、'...'はスプレッド演算子で、配列の要素を展開して新しい配列を作成している
     await Promise.all([...eslintPromises, ...jsBuildPromises]);
 
-    // await console.log(chalk.green('JavaScript processing task completed.'), '--- Number of files:', jsFilePaths.length);
+    // await console.log(
+    //   chalk.green('JavaScript processing task completed.'),
+    //   '--- Number of files:',
+    //   jsFilePaths.length
+    // );
+  };
+
+  try {
+    // もし監視イベントが削除で、削除のなかでもフォルダ削除だった場合
+    if (watchEvent === 'unlinkDir') {
+      deleteDist();
+      // もし監視イベントが削除で、削除のなかでもJSファイル削除だった場合
+    } else if (
+      watchEvent === 'unlink' &&
+      path.basename(watchPath).endsWith('.js') &&
+      !path.basename(watchPath).startsWith('_')
+    ) {
+      deleteDist();
+    } else {
+      // 監視タスクからの場合は、監視で検知したファイルのみをレンダリング（監視タスクで受け取るwatchPathがあるかないかで判断してる）
+      if (watchPath) {
+        if (
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          watchPath.endsWith('.js') &&
+          !path.basename(watchPath).startsWith('_')
+        ) {
+          // 監視イベントが追加か変更かつ、それがJSファイルだった場合に実行
+          await jsBuild({ jsFilePath: watchPath });
+          // await console.log(chalk.green('JS processing task completed.'));
+        } else {
+          await allBuild();
+        }
+      } else {
+        await allBuild();
+      }
+    }
   } catch (error) {
     await console.error(
       `Error in ${chalk.underline('jsTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(

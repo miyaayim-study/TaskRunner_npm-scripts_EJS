@@ -27,7 +27,6 @@ const copyPhp = async ({ watchEvent, watchPath }) => {
       await fs.copyFileSync(inputPath, outputPath);
 
       // console.log(chalk.green('File copied completed successfully.:'), chalk.underline(inputPath));
-
     } catch (error) {
       await console.error(
         `Error in ${chalk.underline('copyPhpFile')}.: ${chalk.bold.italic.bgRed(
@@ -45,12 +44,19 @@ const copyPhp = async ({ watchEvent, watchPath }) => {
 
   try {
     // もし監視イベントが削除だった場合
-    if (watchEvent === 'unlink' || watchEvent === 'unlinkDir') {
+    if (
+      (watchEvent === 'unlink' || watchEvent === 'unlinkDir') &&
+      !path.basename(watchPath).startsWith('_')
+    ) {
       deleteDist();
     } else {
       // 監視タスクからの場合は、監視で検知したファイルのみをコピー（監視タスクで受け取るwatchPathがあるかないかで判断してる）
       if (watchPath) {
-        if ((watchEvent === 'add' || watchEvent === 'change') && watchPath.endsWith(extension)) {
+        if (
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          watchPath.endsWith(extension) &&
+          !path.basename(watchPath).startsWith('_')
+        ) {
           // 監視イベントが追加か変更かつ、それがPHPファイルだった場合に実行
           await copyPhpFile({ copyFilePath: watchPath });
           // await console.log(chalk.green('PHP Copy processing task completed.'));

@@ -85,35 +85,44 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
     deleteTask({ mode: 'one', path: distPath });
   };
 
+  const allRendering = async () => {
+    // 全てのファイルをレンダリング
+    // 指定したディレクトリ内の全てのEJSファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+    const ejsFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.ejs'), {
+      windowsPathsNoEscape: true,
+    }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
+
+    // 配列内の各EJSファイルパスを一つずつ取り出し順番にレンダリング（取り出したEJSファイルパスは'ejsFilePath'）
+    for (const ejsFilePath of ejsFilePaths) {
+      await renderingEjs({ ejsFilePath: ejsFilePath });
+    }
+    await console.log(chalk.green('EJS processing task completed.'), '--- Number of files:', ejsFilePaths.length);
+  }
+
   try {
     // もし監視イベントが削除で、削除のなかでもフォルダ削除だった場合
     if (watchEvent === 'unlinkDir') {
       deleteDist();
       // もし監視イベントが削除で、削除のなかでもEJSファイル削除だった場合
-    } else if (watchEvent === 'unlink' && watchPath.endsWith('.ejs')) {
+    } else if (
+      watchEvent === 'unlink' &&
+      path.basename(watchPath).endsWith('.ejs') &&
+      !path.basename(watchPath).startsWith('_')
+    ) {
       const isChangedExtension = true;
       deleteDist(isChangedExtension);
     } else {
       // 監視タスクからの場合は、監視で検知したファイルのみをレンダリング（監視タスクで受け取るwatchPathがあるかないかで判断してる）
       if (watchPath) {
-        if ((watchEvent === 'add' || watchEvent === 'change') && watchPath.endsWith('.ejs')) {
+        if ((watchEvent === 'add' || watchEvent === 'change') &&  watchPath.endsWith('.ejs') &&  !path.basename(watchPath).startsWith('_') ) {
           // 監視イベントが追加か変更かつ、それがEJSファイルだった場合に実行
           await renderingEjs({ ejsFilePath: watchPath });
           // await console.log(chalk.green('EJS processing task completed.'));
+        } else {
+          await allRendering();
         }
-
-        // 監視タスク以外の場合は、全てのファイルをレンダリング
       } else {
-        // 指定したディレクトリ内の全てのEJSファイルのファイルパスを取得（'_'で始まるファイル名は除く）
-        const ejsFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.ejs'), {
-          windowsPathsNoEscape: true,
-        }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
-
-        // 配列内の各EJSファイルパスを一つずつ取り出し順番にレンダリング（取り出したEJSファイルパスは'ejsFilePath'）
-        for (const ejsFilePath of ejsFilePaths) {
-          await renderingEjs({ ejsFilePath: ejsFilePath });
-        }
-        // await console.log(chalk.green('EJS processing task completed.'), '--- Number of files:', ejsFilePaths.length);
+        await allRendering();
       }
     }
   } catch (error) {

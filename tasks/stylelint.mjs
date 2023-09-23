@@ -18,7 +18,7 @@ const lintCss = () => {
       if (data.errored) {
         console.error(data.output); // エラーメッセージをコンソールに出力
       } else {
-        console.log(chalk.green('CSS Linting completed successfully.'));
+        // console.log(chalk.green('CSS Linting completed successfully.'));
       }
     })
     .catch((error) => {

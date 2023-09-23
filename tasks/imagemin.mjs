@@ -35,8 +35,8 @@ const imgTask = async ({ watchEvent, watchPath }) => {
 
       await imagemin([inputPath], {
         plugins: [
-          imageminMozjpeg({ quality: 75 }),
-          imageminPngquant({ quality: '65-80' }),
+          imageminMozjpeg({ quality: 80 }), // 圧縮品質を80%にする
+          imageminPngquant({ quality: [0.6, 0.7] }), // 圧縮品質を60%～70%の間にする
           imageminGifsicle(),
           imageminSvgo(),
         ],
@@ -45,7 +45,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           return output.replace(/img\//, path.join('../', outputBaseDir)); // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
         },
       });
-      await convertWebp(outputFiles);
+      // await convertWebp(outputFiles);
       // await console.log(chalk.green('Image optimization completed successfully.'));
     } catch (error) {
       await console.error(
@@ -86,13 +86,20 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
 
     if (watchPath) {
-      if ((watchEvent === 'add' || watchEvent === 'change') && validExtensions.test(watchPath)) {
+      if (
+        (watchEvent === 'add' || watchEvent === 'change') &&
+        validExtensions.test(watchPath) &&
+        !path.basename(watchPath).startsWith('_')
+      ) {
         // 監視イベントが追加か変更かつ、それが画像ファイルだった場合に実行
         const srcPath = watchPath;
         await imageOptimizer(srcPath);
       }
     } else {
-      const srcPath = path.join(inputBaseDir, '**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}');
+      const srcPath = path.join(
+        inputBaseDir,
+        '**/!(_)*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'
+      );
       await imageOptimizer(srcPath);
     }
 
