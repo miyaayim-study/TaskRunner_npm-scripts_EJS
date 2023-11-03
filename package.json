@@ -13,6 +13,7 @@
     "build: sass": "node tasks/index.mjs build_one sass",
     "build: js": "node tasks/index.mjs build_one js",
     "build: img": "node tasks/index.mjs build_one img",
+    "build: font": "node tasks/index.mjs build_one font",
     " ": "",
     "lint: sass": "node tasks/index.mjs lint sass",
     "lint: js": "node tasks/index.mjs lint js",
@@ -21,7 +22,8 @@
     "delete: html": "node tasks/index.mjs delete html",
     "delete: css": "node tasks/index.mjs delete css",
     "delete: js": "node tasks/index.mjs delete js",
-    "delete: img": "node tasks/index.mjs delete img"
+    "delete: img": "node tasks/index.mjs delete img",
+    "delete: font": "node tasks/index.mjs delete font"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +37,7 @@
     "cssnano": "^6.0.1",
     "del": "^7.1.0",
     "ejs": "^3.1.9",
+    "ejs-lint": "^2.0.0",
     "esbuild": "^0.19.3",
     "eslint": "^8.49.0",
     "eslint-config-airbnb-base": "^15.0.0",

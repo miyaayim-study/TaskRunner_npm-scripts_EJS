@@ -1,53 +1,228 @@
-import dir from './dir.mjs'; // ファイルパス格納
+import fs from 'fs';
+import path from 'path';
+import { glob } from 'glob';
+import chalk from 'chalk';
+import imagemin from 'imagemin-keep-folder'; // フォルダの構造を保持するためのモジュール
+import imageminMozjpeg from 'imagemin-mozjpeg'; // JPEG画像を最適化するためのモジュール
+import imageminPngquant from 'imagemin-pngquant'; // PNG画像を最適化するためのモジュール
+import imageminGifsicle from 'imagemin-gifsicle'; // GIF画像を最適化するためのモジュール
+import imageminSvgo from 'imagemin-svgo'; // SVG画像を最適化するためのモジュール
+import imageminWebp from 'imagemin-webp'; // webp変換するためのモジュール
+import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
-import path from 'path'; // パス操作のためのモジュール
-import chalk from 'chalk'; // ログのテキストを装飾する
-import imagemin from 'imagemin-keep-folder'; // フォルダの構造を保持するためのツール
-import imageminMozjpeg from 'imagemin-mozjpeg'; // JPEG画像を最適化するためのツール
-import imageminPngquant from 'imagemin-pngquant'; // PNG画像を最適化するためのツール
-import imageminGifsicle from 'imagemin-gifsicle'; // GIF画像を最適化するためのツール
-import imageminSvgo from 'imagemin-svgo'; // SVG画像を最適化するためのツール
-import imageminWebp from 'imagemin-webp'; // webp変換
 
 const imgTask = async ({ watchEvent, watchPath }) => {
   const inputBaseDir = dir.src.img;
   const outputBaseDir = dir.dist.img;
 
-  const convertWebp = async (targetFiles) => {
+  // WebPに変換可能な画像の圧縮処理内容
+  const optimizeWebpConvertibleImages = async (srcPath, taskType) => {
     try {
-      await imagemin([targetFiles], {
-        use: [imageminWebp({ quality: 50 })], // qualityを指定しないと稀にwebpが走らない場合があるので注意する。（{ quality: 50 }）で指定すれば大体いけそう
-      });
-      // await console.log(chalk.green('WebP conversion completed successfully.'));
+      const imageminTask = (inputPath) => {
+        imagemin([inputPath], {
+          plugins: [
+            imageminMozjpeg({ quality: 75 }), // 圧縮品質を75%にする
+            imageminPngquant({ quality: [0.7, 0.8] }), // 圧縮品質を70%～80%の間にする
+          ],
+
+          // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
+          // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
+          replaceOutputDir: (output) => {
+            return output.replace(/img\//, path.join('../', outputBaseDir));
+          },
+        });
+        // await console.log(chalk.green('Image(jpg,jpeg,png) optimization  completed successfully.'));
+      };
+
+      let inputPath;
+      if (taskType == 'all') {
+        const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
+        inputPath = srcPath + extension;
+        await imageminTask(inputPath);
+      }
+      if (taskType == 'one') {
+        inputPath = srcPath;
+        // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
+        const validExtensions = /\.(jpg|jpeg|png)$/i;
+        if (validExtensions.test(inputPath) && !path.basename(inputPath).startsWith('_')) {
+          await imageminTask(inputPath);
+        }
+      }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('convertWebp')}.: ${chalk.bold.italic.bgRed(
+        `Error in ${chalk.underline('optimizeWebpConvertibleImages')}.: ${chalk.bold.italic.bgRed(
           error.name
         )} ${chalk.red(error.message)}`
       );
     }
   };
 
-  const imageOptimizer = async (srcPath) => {
+  // WebPに変換不可能な画像の圧縮処理内容
+  const optimizeNonWebpImages = async (srcPath, taskType) => {
     try {
-      const inputPath = srcPath;
-      const outputFiles = path.join(outputBaseDir, '**/*');
+      const imageminTask = (inputPath) => {
+        imagemin([inputPath], {
+          plugins: [imageminGifsicle(), imageminSvgo()],
 
-      await imagemin([inputPath], {
-        plugins: [
-          imageminMozjpeg({ quality: 80 }), // 圧縮品質を80%にする
-          imageminPngquant({ quality: [0.6, 0.7] }), // 圧縮品質を60%～70%の間にする
-          imageminGifsicle(),
-          imageminSvgo(),
-        ],
-        replaceOutputDir: (output) => {
           // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
-          return output.replace(/img\//, path.join('../', outputBaseDir)); // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
-        },
-      });
-      // await convertWebp(outputFiles);
-      // await console.log(chalk.green('Image optimization completed successfully.'));
+          // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
+          replaceOutputDir: (output) => {
+            return output.replace(/img\//, path.join('../', outputBaseDir));
+          },
+        });
+        // await console.log(chalk.green('Image(gif,svg) optimization  completed successfully.'));
+      };
+
+      let inputPath;
+      if (taskType == 'all') {
+        const extension = '.{gif,svg,GIF,SVG}';
+        inputPath = srcPath + extension;
+        await imageminTask(inputPath);
+      }
+      if (taskType == 'one') {
+        inputPath = srcPath;
+        // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
+        const validExtensions = /\.(gif|svg)$/i;
+        if (validExtensions.test(inputPath) && !path.basename(inputPath).startsWith('_')) {
+          await imageminTask(inputPath);
+        }
+      }
     } catch (error) {
+      await console.error(
+        `Error in ${chalk.underline('optimizeNonWebpImages')}.: ${chalk.bold.italic.bgRed(
+          error.name
+        )} ${chalk.red(error.message)}`
+      );
+    }
+  };
+
+  // Webpファイル生成の処理内容
+  const generateWebpImages = async (srcPath, taskType) => {
+    try {
+      const imageminTask = (inputPath) => {
+        imagemin([inputPath], {
+          use: [imageminWebp({ quality: 75 })], // qualityを指定しないと稀にwebpが走らない場合があるので注意する。
+          // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
+          // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
+          replaceOutputDir: (output) => {
+            return output.replace(/img\//, path.join('../', outputBaseDir));
+          },
+        });
+        // await console.log(chalk.green('WebP image generate completed successfully.'));
+      };
+
+      let inputPath;
+      if (taskType == 'all') {
+        const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
+        inputPath = srcPath + extension;
+        await imageminTask(inputPath);
+      }
+      if (taskType == 'one') {
+        inputPath = srcPath;
+        // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
+        const validExtensions = /\.(jpg|jpeg|png)$/i;
+        if (validExtensions.test(inputPath) && !path.basename(inputPath).startsWith('_')) {
+          await imageminTask(inputPath);
+        }
+      }
+    } catch (error) {
+      await console.error(
+        `Error in ${chalk.underline('generateWebpImages')}.: ${chalk.bold.italic.bgRed(
+          error.name
+        )} ${chalk.red(error.message)}`
+      );
+    }
+  };
+
+  // 画像ファイル以外のファイルコピー処理内容
+  const copyNotImages = async (srcPath, taskType) => {
+    const copyNotImageFile = async ({ copyFilePath }) => {
+      const inputPath = copyFilePath;
+      const outputDir = path.join(
+        outputBaseDir,
+        path.relative(inputBaseDir, path.dirname(inputPath))
+      );
+      const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath));
+
+      try {
+        // 出力先パスまでのフォルダが存在しない場合は作成
+        // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        await fs.copyFileSync(inputPath, outputPath);
+
+        // console.log(chalk.green('Not image file copied completed successfully.:'), chalk.underline(inputPath));
+      } catch (error) {
+        await console.error(
+          `Error in ${chalk.underline('copyNotImageFile')}.: ${chalk.bold.italic.bgRed(
+            error.name
+          )} ${chalk.red(error.message)}`
+        );
+      }
+    };
+
+    // 全ファイルコピー（タスク開始時用）
+    if (taskType == 'all') {
+      // オプション内容について、
+      // ignore：指定したディレクトリとディレクトリ配下のファイルを無視
+      // nodir：ディレクトリにはマッチせず、ファイルにのみマッチする。
+      // windowsPathsNoEscape：Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
+      const copyFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*'), {
+        ignore: ['**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'],
+        nodir: true,
+        windowsPathsNoEscape: true,
+      });
+
+      for (const copyFilePath of copyFilePaths) {
+        await copyNotImageFile({ copyFilePath: copyFilePath });
+      }
+    }
+
+    // 1つのファイルをコピー（監視タスク用）
+    if (taskType == 'one') {
+      // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
+      const validExtensions = /\.(jpg|jpeg|png|gif|svg)$/i;
+      if (!validExtensions.test(watchPath) && !path.basename(srcPath).startsWith('_')) {
+        await copyNotImageFile({ copyFilePath: srcPath });
+      }
+    }
+  };
+
+  // 画像最適化の出力モード説明
+  // ・noWebp … Webp画像を生成しない。
+  // ・useIfPossible … Webp画像を生成する。
+  // ・fallback … 通常の圧縮画像生成とWebp画像生成の両方を行う。
+  const imageOptimizer = async (srcPath, taskType) => {
+    // const optimizationMode = 'noWebp';
+    // const optimizationMode = 'useIfPossible';
+    const optimizationMode = 'fallback';
+    try {
+      switch (optimizationMode) {
+        case 'noWebp':
+          await optimizeWebpConvertibleImages(srcPath, taskType);
+          await optimizeNonWebpImages(srcPath, taskType);
+          await copyNotImages(srcPath, taskType);
+          break;
+
+        case 'useIfPossible':
+          await generateWebpImages(srcPath, taskType);
+          await optimizeNonWebpImages(srcPath, taskType);
+          await copyNotImages(srcPath, taskType);
+          break;
+
+        case 'fallback':
+          await optimizeWebpConvertibleImages(srcPath, taskType);
+          await generateWebpImages(srcPath, taskType);
+          await optimizeNonWebpImages(srcPath, taskType);
+          await copyNotImages(srcPath, taskType);
+          break;
+
+        default:
+          throw new Error('Invalid webpMode');
+        // await console.log(`Failed to delete. Invalid mode. Please specify ${chalk.underline(deleteMode)} correctly.`);
+      }
+    } catch {
       await console.error(
         `Error in ${chalk.underline('imageOptimizer')}.: ${chalk.bold.italic.bgRed(
           error.name
@@ -56,13 +231,16 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
+  // 監視イベントが削除の場合の処理内容
   const deleteDist = async () => {
     const distPath = path.join(outputBaseDir, path.relative(inputBaseDir, watchPath));
     const extension = path.extname(watchPath); // 現在の拡張子を取得
+    // ファイルパスの拡張子をwebpに変換
     const distPathWebp = path.join(
       path.dirname(distPath),
       path.basename(distPath, extension) + '.webp'
-    ); // ファイルパスの拡張子をwebpに変換
+    );
+
     // Promise.allを使ってタスクを並列で実行
     await Promise.all([
       deleteTask({ mode: 'one', path: distPath }), // webpではない画像ファイルを削除
@@ -71,41 +249,36 @@ const imgTask = async ({ watchEvent, watchPath }) => {
   };
 
   try {
-    // 画像ファイルを識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
-    const validExtensions = /\.(jpg|jpeg|png|gif|svg)$/i;
-    // 監視イベントが削除だった場合
-    // 削除のなかでもフォルダ削除だった場合
-    if (watchEvent === 'unlinkDir') {
+    // 監視タスクの監視イベントが削除の場合
+    if (watchEvent === 'unlinkDir' || watchEvent === 'unlink') {
       // 監視イベントで削除を受け取った場合の処理
       await deleteDist();
 
-      // 削除のなかでもファイル削除だった場合
-    } else if (watchEvent === 'unlink' && validExtensions.test(watchPath)) {
-      // watchPathが正規表現パターン（画像ファイルの拡張子）とマッチすればtrueを返す
-      await deleteDist();
-    }
-
-    if (watchPath) {
-      if (
-        (watchEvent === 'add' || watchEvent === 'change') &&
-        validExtensions.test(watchPath) &&
-        !path.basename(watchPath).startsWith('_')
-      ) {
-        // 監視イベントが追加か変更かつ、それが画像ファイルだった場合に実行
-        const srcPath = watchPath;
-        await imageOptimizer(srcPath);
-      }
+      // 削除の監視イベントを受け取らなかった場合
     } else {
-      const srcPath = path.join(
-        inputBaseDir,
-        '**/!(_)*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'
-      );
-      await imageOptimizer(srcPath);
-    }
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみを圧縮（'_'で始まるファイル名は除く）
+      if (watchPath) {
+        if (
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          !path.basename(watchPath).startsWith('_')
+        ) {
+          const srcPath = watchPath;
+          const taskType = 'one';
+          await imageOptimizer(srcPath, taskType);
+        }
 
-    // if (!(watchEvent === 'addDir')) { // 監視イベントがフォルダ追加だった場合、下記のログを表示しない（なにもしてないのにログ出すのはおかしいから）
-    // await console.log(chalk.green('Image processing task completed.'));
-    // }
+        // 監視タスク以外の場合は、全てのファイルを圧縮
+      } else {
+        const srcPath = path.join(inputBaseDir, '**/!(_)*');
+        const taskType = 'all';
+        await imageOptimizer(srcPath, taskType);
+      }
+
+      // 監視イベントがフォルダ追加だった場合、下記のログを表示しない（フォルダ追加操作のみで、画像圧縮処理を行っていない場合に圧縮完了ログの表示を出すのは不適切のため）
+      // if (!(watchEvent === 'addDir')) {
+      // await console.log(chalk.green('Image processing task completed.'));
+      // }
+    }
   } catch (error) {
     await console.error(
       `Error in ${chalk.underline('imgTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(

@@ -3,7 +3,7 @@ module
 ************************************************/
 import path from 'path';
 import { glob } from 'glob';
-import chalk from 'chalk'; // ログのテキストを装飾する
+import chalk from 'chalk'; // ログのテキストを装飾するモジュール
 
 /************************************************
 my config
@@ -22,7 +22,8 @@ import watchTask from './watch.mjs';
 import { server } from './server.mjs';
 import eslint from './eslint.mjs';
 import stylelint from './stylelint.mjs';
-// import copyTask from './copy.mjs';
+import copyFontTask from './copyFont.mjs';
+
 // import copyHtmlTask from './copyHtml.mjs';
 // import copyPhpTask from './copyPhp.mjs';
 // import copyCssTask from './copyCss.mjs';
@@ -46,7 +47,8 @@ const executeTask = async ({ task, mode, type }) => {
 
 const execution = async (mode, type) => {
   try {
-    if (mode === 'build') {
+
+    if (mode === 'development' || mode === 'build') {
       const deleteMode = 'all';
       await Promise.all([executeTask({ task: deleteTask, mode: deleteMode })]);
     }
@@ -58,6 +60,8 @@ const execution = async (mode, type) => {
         executeTask({ task: sassTask, mode: mode }),
         executeTask({ task: jsTask, mode: mode }),
         executeTask({ task: imgTask, mode: mode }),
+        executeTask({ task: copyFontTask, mode: mode }),
+
         // executeTask({ task: copyHtmlTask, mode: mode }),
         // executeTask({ task: copyPhpTask, mode: mode }),
         // executeTask({ task: copyCssTask, mode: mode }),
@@ -76,6 +80,8 @@ const execution = async (mode, type) => {
         watchTask({ watchSrc: path.join(dir.src.sass, '**/*.scss'), task: sassTask, mode: mode }),
         watchTask({ watchSrc: path.join(dir.src.js, '**/*.js'), task: jsTask, mode: mode }),
         watchTask({ watchSrc: dir.src.img, task: imgTask }),
+        watchTask({ watchSrc: dir.src.font, task: copyFontTask, mode: mode }),
+
         // watchTask({ watchSrc: dir.src.html, task: copyHtmlTask, mode: mode }),
         // watchTask({ watchSrc: dir.src.php, task: copyPhpTask, mode: mode }),
         // watchTask({ watchSrc: dir.src.css, task: copyCssTask, mode: mode }),
@@ -84,6 +90,10 @@ const execution = async (mode, type) => {
     }
 
     if (mode === 'build_one') {
+
+      const deleteMode = 'all';
+      await Promise.all([executeTask({ task: deleteTask, mode: deleteMode })]);
+
       mode = 'development';
       if (type === 'ejs') {
         await executeTask({ task: ejsTask });
@@ -97,6 +107,10 @@ const execution = async (mode, type) => {
       if (type === 'img') {
         await executeTask({ task: imgTask });
       }
+      if (type === 'font') {
+        await executeTask({ task: copyFontTask });
+      }
+
       // if (type === 'html') {
       //   await executeTask({ task: copyHtmlTask });
       // }
@@ -121,9 +135,10 @@ const execution = async (mode, type) => {
         // JSファイルの構文+文法チェック
         await eslint({ filePath: dir.src.js, mode: isCodeStyle });
         // HTMLファイルのJS部分の構文+文法チェック
+        // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
         const filePaths = await glob(path.join(dir.dist.html, '**/*.html'), {
           windowsPathsNoEscape: true,
-        }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
+        });
         for (const filePath of filePaths) {
           await eslint({ filePath: filePath, mode: isCodeStyle });
         }

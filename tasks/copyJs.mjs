@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { glob } from 'glob';
 import chalk from 'chalk';
+import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
 import eslint from './eslint.mjs';
-import dir from './dir.mjs';
 
 const copyJs = async ({ mode, watchEvent, watchPath }) => {
   const taskMode = mode;
@@ -22,7 +22,7 @@ const copyJs = async ({ mode, watchEvent, watchPath }) => {
 
     try {
       // 出力先パスまでのフォルダが存在しない場合は作成
-      // recursive: trueにすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行ってくれる。
+      // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
@@ -46,28 +46,30 @@ const copyJs = async ({ mode, watchEvent, watchPath }) => {
     }
   };
 
-  // 監視イベントで削除を受け取った場合の処理
+  // 監視イベントが削除の場合の処理内容
   const deleteDist = () => {
     const distPath = path.join(outputBaseDir, path.relative(inputBaseDir, watchPath));
     deleteTask({ mode: 'one', path: distPath });
   };
 
   try {
-    // もし監視イベントが削除だった場合
+    // 監視タスクの監視イベントが削除の場合（'_'で始まるファイル名は除く）
     if (
       (watchEvent === 'unlink' || watchEvent === 'unlinkDir') &&
       !path.basename(watchPath).startsWith('_')
     ) {
-      deleteDist();
+      await deleteDist();
+
+      // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクからの場合は、監視で検知したファイルのみをコピー（監視タスクで受け取るwatchPathがあるかないかで判断してる）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみをコピー（'_'で始まるファイル名は除く）
+      // （監視タスクかどうかは、監視タスクで受け取るwatchPathが有るか無いかで判断）
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
           watchPath.endsWith(extension) &&
           !path.basename(watchPath).startsWith('_')
         ) {
-          // 監視イベントが追加か変更かつ、それがJSファイルだった場合に実行
           await copyJsFile({ copyFilePath: watchPath });
           // await console.log(chalk.green('JS Copy processing task completed.'));
         }
@@ -75,10 +77,10 @@ const copyJs = async ({ mode, watchEvent, watchPath }) => {
         // 監視タスク以外の場合は、全てのファイルをコピー
       } else {
         // 指定したディレクトリ内の全てのファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+        // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
         const copyFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*' + extension), {
           windowsPathsNoEscape: true,
-        }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
-
+        });
         for (const copyFilePath of copyFilePaths) {
           await copyJsFile({ copyFilePath: copyFilePath });
         }

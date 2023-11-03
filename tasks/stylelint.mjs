@@ -1,7 +1,7 @@
-import stylelint from 'stylelint';
-import chalk from 'chalk';
 // import path from 'path';
+import chalk from 'chalk';
 // import dir from './dir.mjs';
+import stylelint from 'stylelint';
 
 const lintCss = () => {
   // const inputBaseDir = dir.src.sass;
@@ -17,7 +17,7 @@ const lintCss = () => {
     .then((data) => {
       if (data.errored) {
         console.error(data.output); // エラーメッセージをコンソールに出力
-      } else {
+      // } else {
         // console.log(chalk.green('CSS Linting completed successfully.'));
       }
     })

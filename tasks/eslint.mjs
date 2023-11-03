@@ -1,6 +1,6 @@
-import { ESLint } from 'eslint';
-import chalk from 'chalk'; // ログのテキストを装飾する
 // import path from 'path';
+import chalk from 'chalk';
+import { ESLint } from 'eslint';
 // import dir from './dir.mjs';
 
 const lintJs = async ({ filePath, mode }) => {

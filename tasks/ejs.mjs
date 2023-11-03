@@ -3,10 +3,10 @@ import path from 'path';
 import { glob } from 'glob';
 import ejs from 'ejs';
 import * as prettier from 'prettier';
-import chalk from 'chalk'; // ログのテキストを装飾する
+import chalk from 'chalk';
 import dir from './dir.mjs';
-import eslint from './eslint.mjs';
 import deleteTask from './delete.mjs';
+import eslint from './eslint.mjs';
 
 const ejsTask = async ({ mode, watchEvent, watchPath }) => {
   const taskMode = mode;
@@ -17,6 +17,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
   const renderingEjs = async ({ ejsFilePath }) => {
     // 出力先のディレクトリパスとファイルパスを作成、ファイルパスはこの時点で'.ejs'から'.html'に拡張子変更
     const inputPath = ejsFilePath;
+    const inputPathData = fs.readFileSync(inputPath, 'utf8');
     const outputDir = path.join(
       outputBaseDir,
       path.relative(inputBaseDir, path.dirname(inputPath))
@@ -33,7 +34,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
 
     try {
       // 出力先パスまでのフォルダが存在しない場合は作成
-      // recursive: trueにすることで、ejs/フォルダ/フォルダ/index.htmlのようなディレクトリ構造が深い場合も再帰的にフォルダ作成を行ってくれる。
+      // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
@@ -73,7 +74,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
     }
   };
 
-  // 監視イベントで削除を受け取った場合の処理
+  // 監視イベントが削除の場合の処理内容
   const deleteDist = (isChangedExtension) => {
     let srcPath;
     if (isChangedExtension) {
@@ -88,39 +89,52 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
   const allRendering = async () => {
     // 全てのファイルをレンダリング
     // 指定したディレクトリ内の全てのEJSファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+    // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const ejsFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.ejs'), {
       windowsPathsNoEscape: true,
-    }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
+    });
 
     // 配列内の各EJSファイルパスを一つずつ取り出し順番にレンダリング（取り出したEJSファイルパスは'ejsFilePath'）
     for (const ejsFilePath of ejsFilePaths) {
       await renderingEjs({ ejsFilePath: ejsFilePath });
     }
-    await console.log(chalk.green('EJS processing task completed.'), '--- Number of files:', ejsFilePaths.length);
-  }
+    // await console.log(
+    //   chalk.green('EJS processing task completed.'),
+    //   '--- Number of files:',
+    //   ejsFilePaths.length
+    // );
+  };
 
   try {
-    // もし監視イベントが削除で、削除のなかでもフォルダ削除だった場合
+    // 監視タスクの監視イベントがフォルダ削除の場合
     if (watchEvent === 'unlinkDir') {
-      deleteDist();
-      // もし監視イベントが削除で、削除のなかでもEJSファイル削除だった場合
+      await deleteDist();
+
+      // 監視タスクの監視イベントがEJSファイル削除の場合（'_'で始まるファイル名は除く）
     } else if (
       watchEvent === 'unlink' &&
       path.basename(watchPath).endsWith('.ejs') &&
       !path.basename(watchPath).startsWith('_')
     ) {
       const isChangedExtension = true;
-      deleteDist(isChangedExtension);
+      await deleteDist(isChangedExtension);
+
+      // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクからの場合は、監視で検知したファイルのみをレンダリング（監視タスクで受け取るwatchPathがあるかないかで判断してる）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当するEJSファイルのみをレンダリング（'_'で始まるファイル名は除く）
       if (watchPath) {
-        if ((watchEvent === 'add' || watchEvent === 'change') &&  watchPath.endsWith('.ejs') &&  !path.basename(watchPath).startsWith('_') ) {
-          // 監視イベントが追加か変更かつ、それがEJSファイルだった場合に実行
+        if (
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          watchPath.endsWith('.ejs') &&
+          !path.basename(watchPath).startsWith('_')
+        ) {
           await renderingEjs({ ejsFilePath: watchPath });
           // await console.log(chalk.green('EJS processing task completed.'));
         } else {
           await allRendering();
         }
+
+        // 監視タスク以外の場合は、全てのファイルをレンダリング
       } else {
         await allRendering();
       }

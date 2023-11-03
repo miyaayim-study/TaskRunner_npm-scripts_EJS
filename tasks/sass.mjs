@@ -1,15 +1,15 @@
-import dir from './dir.mjs'; // ディレクトリのパスを持つモジュールをインポート
-import sassGlob from './sassGlob.mjs';
-import fs from 'fs'; // ファイルシステムモジュールをインポート
-import path from 'path'; // パス操作のためのモジュールをインポート
+import fs from 'fs';
+import path from 'path';
 import { glob } from 'glob';
-import * as sass from 'sass'; // Sassコンパイラのモジュールをインポート
-import postcss from 'postcss'; // PostCSSのモジュールをインポート
-import autoprefixer from 'autoprefixer'; // 自動プレフィックスを追加するPostCSSプラグインをインポート
+import chalk from 'chalk';
+import * as sass from 'sass'; // Sassコンパイラのモジュール
+import postcss from 'postcss'; // PostCSSのモジュール
+import autoprefixer from 'autoprefixer'; // 自動プレフィックスを追加するPostCSSプラグイン
 // import cssnano from 'cssnano'; // CSSファイル圧縮のためのPostCSSプラグイン
-import chalk from 'chalk'; // ログのテキストを装飾する
-import stylelint from './stylelint.mjs';
+import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
+import sassGlob from './sassGlob.mjs'; // 自作のsassファイル専用のglobモジュール
+import stylelint from './stylelint.mjs';
 
 // コンパイルSass関数の定義
 const sassTask = async ({ mode, watchEvent, watchPath }) => {
@@ -22,13 +22,15 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     const outputPath = path.join(outputDir, path.basename(inputPath)).replace('.scss', '.css');
 
     try {
-      // scssファイルの構文チェックを先に走らせといた。
+      // 時間短縮のため、scssファイルの構文チェックを先に走らせている
       stylelint();
 
-      // 出力ディレクトリが存在しない場合、再帰的に作成
+      // 出力先パスまでのフォルダが存在しない場合は作成
+      // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
+
       // Sassコンパイルオプションの設定
       const sassOptions = {
         loadPaths: [inputBaseDir], // @useなどのルールで読み込まれたスタイルシートを探すパス。ここがベースディレクトリとなる。
@@ -82,7 +84,7 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     }
   };
 
-  // 監視イベントで削除を受け取った場合の処理
+  // 監視イベントが削除の場合の処理内容
   const deleteDist = (isChangedExtension) => {
     let srcPath;
     if (isChangedExtension) {
@@ -94,13 +96,13 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     deleteTask({ mode: 'one', path: distPath });
   };
 
-
+  // 全てのファイルをコンパイル
   const allCompile = async () => {
-    // 全てのファイルをコンパイル
     // 指定したディレクトリ内の全てのSassファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+    // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const sassFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.scss'), {
       windowsPathsNoEscape: true,
-    }); // オプションは、Windowsスタイルのパスセパレータを有効にしたい（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないがそれを使えるようにする）
+    });
 
     // 配列内の各Sassファイルパスを一つずつ取り出し順番にレンダリング（取り出したSassファイルパスは'sassFilePath'）
     for (const sassFilePath of sassFilePaths) {
@@ -109,22 +111,23 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     // await console.log(chalk.green('Sass processing task completed.'), '--- Number of files:', sassFilePaths.length);
   };
 
-
-
   try {
-    // もし監視イベントが削除で、削除のなかでもフォルダ削除だった場合
+    // 監視タスクの監視イベントがフォルダ削除の場合
     if (watchEvent === 'unlinkDir') {
-      deleteDist();
-      // もし監視イベントが削除で、削除のなかでもSassファイル削除だった場合
+      await deleteDist();
+
+      // 監視タスクの監視イベントがSassファイル削除の場合（'_'で始まるファイル名は除く）
     } else if (
       watchEvent === 'unlink' &&
       path.basename(watchPath).endsWith('.scss') &&
       !path.basename(watchPath).startsWith('_')
     ) {
       const isChangedExtension = true;
-      deleteDist(isChangedExtension);
+      await deleteDist(isChangedExtension);
+
+      // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクからの場合は、監視で検知したファイルのみをレンダリング（監視タスクで受け取るwatchPathがあるかないかで判断してる）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知したSassファイルのみをレンダリング（'_'で始まるファイル名は除く）
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
@@ -134,9 +137,13 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
           // 監視イベントが追加か変更かつ、それがSassファイルであり、ファイル名の先頭が'_'ではない場合に実行
           await compileSass({ sassFilePath: watchPath });
           // await console.log(chalk.green('Sass processing task completed.'));
+
+          // それ以外の監視イベントの場合は、全てのファイルをレンダリング
         } else {
           await allCompile();
         }
+
+        // 監視タスク以外の場合は、全てのファイルをレンダリング
       } else {
         await allCompile();
       }
@@ -150,4 +157,4 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
   }
 };
 
-export default sassTask; // コンパイルSass関数をエクスポート
+export default sassTask;

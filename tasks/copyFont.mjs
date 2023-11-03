@@ -2,18 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { glob } from 'glob';
 import chalk from 'chalk';
-import * as prettier from 'prettier';
 import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
-import eslint from './eslint.mjs';
 
-const copyHtml = async ({ mode, watchEvent, watchPath }) => {
-  const taskMode = mode;
-  const inputBaseDir = dir.src.html;
-  const outputBaseDir = dir.dist.html;
-  const extension = '.html';
+const copyFont = async ({ watchEvent, watchPath }) => {
+  const inputBaseDir = dir.src.font;
+  const outputBaseDir = dir.dist.font;
 
-  const copyHtmlFile = async ({ copyFilePath }) => {
+  const copyFontFile = async ({ copyFilePath }) => {
     const inputPath = copyFilePath;
     const outputDir = path.join(
       outputBaseDir,
@@ -27,27 +23,12 @@ const copyHtml = async ({ mode, watchEvent, watchPath }) => {
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
-      // await fs.copyFileSync(inputPath, outputPath);
-
-      // ここからPrettier関連
-      const inputFileData = await fs.readFileSync(inputPath, 'utf8');
-
-      // Prettierを使用してHTMLコードを整形
-      const formattedResult = await prettier.format(inputFileData, { parser: 'html' });
-
-      // HTMLデータを指定した出力先に再生成
-      await fs.writeFileSync(outputPath, formattedResult, 'utf8');
+      await fs.copyFileSync(inputPath, outputPath);
 
       // console.log(chalk.green('File copied completed successfully.:'), chalk.underline(inputPath));
-      if (taskMode === 'build') {
-        // buildモードならスタイルガイドに沿った文法チェックも行う
-        await eslint({ filePath: outputPath, mode: true });
-      } else {
-        await eslint({ filePath: outputPath });
-      }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('copyHtmlFile')}.: ${chalk.bold.italic.bgRed(
+        `Error in ${chalk.underline('copyFontFile')}.: ${chalk.bold.italic.bgRed(
           error.name
         )} ${chalk.red(error.message)}`
       );
@@ -61,6 +42,9 @@ const copyHtml = async ({ mode, watchEvent, watchPath }) => {
   };
 
   try {
+    // Fontファイルを識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
+    const validExtensions = /\.(ttf|otf|woff|woff2)$/i;
+
     // 監視タスクの監視イベントが削除の場合（'_'で始まるファイル名は除く）
     if (
       (watchEvent === 'unlink' || watchEvent === 'unlinkDir') &&
@@ -75,26 +59,30 @@ const copyHtml = async ({ mode, watchEvent, watchPath }) => {
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
-          watchPath.endsWith(extension) &&
+          // watchPath.endsWith(extension) &&
+          validExtensions.test(watchPath) &&
           !path.basename(watchPath).startsWith('_')
         ) {
-          await copyHtmlFile({ copyFilePath: watchPath });
-          // await console.log(chalk.green('HTML Copy processing task completed.'));
+          await copyFontFile({ copyFilePath: watchPath });
+          // await console.log(chalk.green('Font Copy processing task completed.'));
         }
 
         // 監視タスク以外の場合は、全てのファイルをコピー
       } else {
         // 指定したディレクトリ内の全てのファイルのファイルパスを取得（'_'で始まるファイル名は除く）
         // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
-        const copyFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*' + extension), {
-          windowsPathsNoEscape: true,
-        });
+        const copyFilePaths = await glob(
+          path.join(inputBaseDir, '**/!(_)*.{ttf,otf,woff,woff2,TTF,OTF,WOFF,WoFF2}'),
+          {
+            windowsPathsNoEscape: true,
+          }
+        );
 
         for (const copyFilePath of copyFilePaths) {
-          await copyHtmlFile({ copyFilePath: copyFilePath });
+          await copyFontFile({ copyFilePath: copyFilePath });
         }
         // await console.log(
-        //   chalk.green('HTML Copy processing task completed.'),
+        //   chalk.green('Font Copy processing task completed.'),
         //   '--- Number of files:',
         //   copyFilePaths.length
         // );
@@ -102,11 +90,11 @@ const copyHtml = async ({ mode, watchEvent, watchPath }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('copyHtml')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+      `Error in ${chalk.underline('copyFont')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
         error.message
       )}`
     );
   }
 };
 
-export default copyHtml;
+export default copyFont;

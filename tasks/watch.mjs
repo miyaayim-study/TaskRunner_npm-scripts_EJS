@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
+import chalk from 'chalk';
 import { reload } from './server.mjs';
-import chalk from 'chalk'; // ログのテキストを装飾する
 
 const watchTask = async ({ watchSrc, task, taskSrc, taskDist, mode }) => {
   const inputPaths = watchSrc;

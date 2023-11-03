@@ -1,6 +1,6 @@
 import { deleteAsync } from 'del';
-import dir from './dir.mjs'; // ディレクトリのパスを持つモジュールをインポート
-import chalk from 'chalk'; // ログのテキストを装飾する
+import chalk from 'chalk';
+import dir from './dir.mjs';
 
 const deleteTask = async ({ mode, path }) => {
   const deleteMode = mode;
@@ -18,7 +18,8 @@ const deleteTask = async ({ mode, path }) => {
         break;
 
       case 'html':
-        const deletedHtmlFiles = await deleteAsync([dir.dist.html + '**/*.html']);
+        const deletedHtmlFiles = await deleteAsync(['./dist/**/*.html']);
+        // const deletedHtmlFiles = await deleteAsync([dir.dist.html + '**/*.html']);
         // await console.log('Deleted HTML files.:\n', chalk.underline(deletedHtmlFiles.join('\n')));
         break;
 
@@ -34,6 +35,11 @@ const deleteTask = async ({ mode, path }) => {
 
       case 'img':
         const deletedImgFiles = await deleteAsync([dir.dist.img]);
+        // await console.log('Deleted IMG files.:', chalk.underline(deletedImgFiles.join('\n')));
+        break;
+
+      case 'font':
+        const deletedFontFiles = await deleteAsync([dir.dist.font]);
         // await console.log('Deleted IMG files.:', chalk.underline(deletedImgFiles.join('\n')));
         break;
 
