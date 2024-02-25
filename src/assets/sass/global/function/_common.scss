@@ -1,0 +1,59 @@
+@use 'sass:math';
+@use "sass:map";
+@use '../variables/' as *;
+
+// px to rem
+@function to-rem($pixel) {
+  $baseFontSize: 16;
+  @return math.div($pixel, $baseFontSize) * 1rem;
+}
+
+// px to vw
+@function to-vw($pixel, $viewport: map.get($viewportList, pc)) {
+  // $viewportの値が数値であるかどうかを識別し条件分岐させる
+  // $viewportの記述はvariables > _base.scss にあります
+  @if type-of($viewport) == number {
+    @return math.div($pixel, $viewport) * 100vw;
+  } @else {
+    $viewportItem: map.get($viewportList, $viewport);
+    @return math.div($pixel, $viewportItem) * 100vw;
+  }
+}
+
+// line-height
+@function f-lh($pixel, $height) {
+  @return math.div($height, $pixel);
+}
+
+// letter-spacing
+@function f-ls($spacing) {
+  @return math.div($spacing, 1000) + rem;
+}
+
+// viewport-based clamped values
+@function clamp-vp(
+  $minSize,
+  $maxSize,
+  $minViewportWidth: map.get($viewportList, sp),
+  $maxViewportWidth: map.get($viewportList, pc)
+) {
+  // $Viewports: (
+  //   sp: map.get($viewportList, sp),
+  //   tab: map.get($viewportList, tab),
+  //   pc: map.get($viewportList, pc),
+  // );
+
+  @if $minSize <= $maxSize and $minViewportWidth <= $maxViewportWidth {
+    $change: math.div($maxSize - $minSize, $maxViewportWidth - $minViewportWidth);
+    $preferredSize: to-rem($maxSize - ($maxViewportWidth * $change));
+    $relativeValue: $change * 100vw;
+    $baseSize: '#{$preferredSize} + #{$relativeValue}';
+    @return clamp(to-rem($minSize), #{$baseSize}, to-rem($maxSize));
+  } @else {
+    @error "指定された値が正しくありません。指定できる引数は次のとおりです。 => clamp-vp(最小フォントサイズ, 最大フォントサイズ, 最小ビューポートサイズ（初期値: #{map.get($viewportList, sp)}), 最大ビューポートサイズ（初期値: #{map.get($viewportList, pc)}))";
+  }
+}
+
+// 使い方
+// 例：width: clamp-vp(clamp-vp(最小サイズ, 最大サイズ, 最小ビューポートサイズ, 最大ビューポートサイズ))
+// ※ 最小ビューポートサイズ, 最大ビューポートサイズは初期値が入っているので任意入力です。

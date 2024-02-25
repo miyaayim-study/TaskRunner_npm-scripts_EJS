@@ -6,7 +6,7 @@ import stylelint from 'stylelint';
 const lintCss = () => {
   // const inputBaseDir = dir.src.sass;
   // const inputPath = path.join(inputBaseDir, '**/*.scss');
-  const inputPath = 'src/sass/**/!(_reset|_font)*.scss'; // '_reset.scss'、'_font.scss'は除外した
+  const inputPath = 'src/assets/sass/**/!(_reset|_font)*.scss'; // '_reset.scss'、'_font.scss'は除外した
 
   stylelint
     .lint({

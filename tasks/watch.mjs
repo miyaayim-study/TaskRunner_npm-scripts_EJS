@@ -1,5 +1,5 @@
-import chokidar from 'chokidar';
 import chalk from 'chalk';
+import chokidar from 'chokidar';
 import { reload } from './server.mjs';
 
 const watchTask = async ({ watchSrc, task, taskSrc, taskDist, mode }) => {
@@ -20,7 +20,7 @@ const watchTask = async ({ watchSrc, task, taskSrc, taskDist, mode }) => {
         // 監視イベントがフォルダの追加・削除の場合はリロードしない（フォルダ内にファイルが存在する場合は、'add'or'unlink'のイベントが検出されるのでリロードされます）
         // フォルダ操作だけでリロードが発生するのがストレスだったため条件分岐を行った。
         if (!(watchEvent === 'addDir' || watchEvent === 'unlinkDir')) {
-          reload(); // タスクが完了した後にリロードを実行
+          await reload(); // タスクが完了した後にリロードを実行
         }
       } catch (error) {
         await console.error(

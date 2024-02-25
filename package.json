@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "sharp": "node tasks/sharp.mjs",
     "dev": "node tasks/index.mjs development",
     "build": "node tasks/index.mjs build",
     "": "",
@@ -54,6 +55,7 @@
     "path": "^0.12.7",
     "prettier": "^3.0.3",
     "sass": "^1.67.0",
+    "sharp": "^0.32.6",
     "slash": "^5.1.0",
     "stylelint": "^15.10.3",
     "stylelint-config-recommended-scss": "^13.0.0"

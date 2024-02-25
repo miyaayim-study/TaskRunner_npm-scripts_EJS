@@ -11,6 +11,12 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
   const taskMode = mode;
   const inputBaseDir = dir.src.js;
   const outputBaseDir = dir.dist.js;
+  const IGNORED_INPUT_DIR = ['library', 'plugins']; // 除外するフォルダを定義
+
+  // 除外フォルダがファイルパスに含まれているかを判定
+  const isInIgnoredDirectory = (filePath) => {
+    return IGNORED_INPUT_DIR.some(dir => filePath.includes(`\\${dir}\\`) || filePath.startsWith(`${dir}\\`) || filePath.endsWith(`\\${dir}`));
+  };
 
   const jsBuild = async ({ jsFilePath }) => {
     const inputPath = jsFilePath;
@@ -53,6 +59,33 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
     }
   };
 
+  // 除外フォルダの場合のコピー処理内容
+  const copyJsFile = async ({ jsFilePath }) => {
+    const inputPath = jsFilePath;
+    const outputDir = path.join(
+      outputBaseDir,
+      path.relative(inputBaseDir, path.dirname(inputPath))
+    );
+    const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath));
+
+    try {
+      // 出力先パスまでのフォルダが存在しない場合は作成
+      // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      await fs.copyFileSync(inputPath, outputPath);
+
+      // await console.log(chalk.green('File copied completed successfully.:'), chalk.underline(inputPath));
+    } catch (error) {
+      await console.error(
+        `Error in ${chalk.underline('copyJsFile')}.: ${chalk.bold.italic.bgRed(
+          error.name
+        )} ${chalk.red(error.message)}`
+      );
+    }
+  };
+
   // 監視イベントが削除の場合の処理内容
   const deleteDist = () => {
     let srcPath;
@@ -86,15 +119,33 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
     let eslintPromises;
     if (taskMode === 'build') {
       // buildモードならスタイルガイドに沿った文法チェックも行う
-      eslintPromises = jsAllFilePaths.map((jsFilePath) =>
-        eslint({ filePath: jsFilePath, mode: true })
-      );
+      eslintPromises = jsAllFilePaths.map((jsFilePath) => {
+        // 除外フォルダ内のファイルパスではない場合にeslintを実行
+        if (!isInIgnoredDirectory(jsFilePath)) {
+          return eslint({ filePath: jsFilePath, mode: true });
+        }
+        return Promise.resolve(); // 除外フォルダ内の場合は空のPromiseを返す
+      });
     } else {
-      eslintPromises = jsAllFilePaths.map((jsFilePath) => eslint({ filePath: jsFilePath }));
+      eslintPromises = jsAllFilePaths.map((jsFilePath) => {
+        // 除外フォルダ内のファイルパスではない場合にeslintを実行
+        if (!isInIgnoredDirectory(jsFilePath)) {
+          return eslint({ filePath: jsFilePath });
+        }
+        return Promise.resolve(); // 除外フォルダ内の場合は空のPromiseを返す
+      });
     }
 
     // src/js内の'_'で始まるファイル名を除いた全てのJSファイルを一つずつ取り出しビルドする
-    const jsBuildPromises = jsFilePaths.map((jsFilePath) => jsBuild({ jsFilePath: jsFilePath }));
+    const jsBuildPromises = jsFilePaths.map(async (jsFilePath) => {
+      // 除外フォルダ内のファイルパスの場合はcopyJsFileを実行、それ以外はjsBuildを実行
+      if (isInIgnoredDirectory(jsFilePath)) {
+        await copyJsFile({ jsFilePath: jsFilePath });
+      } else {
+        await jsBuild({ jsFilePath: jsFilePath });
+      }
+    });
+
     // 並列実行、'...'はスプレッド演算子で、配列の要素を展開して新しい配列を作成している
     await Promise.all([...eslintPromises, ...jsBuildPromises]);
 
@@ -127,7 +178,12 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
           watchPath.endsWith('.js') &&
           !path.basename(watchPath).startsWith('_')
         ) {
-          await jsBuild({ jsFilePath: watchPath });
+          // 除外フォルダ内のファイルパスの場合はcopyJsFileを実行、それ以外はjsBuildを実行
+          if (isInIgnoredDirectory(watchPath)) {
+            await copyJsFile({ jsFilePath: watchPath });
+          } else {
+            await jsBuild({ jsFilePath: watchPath });
+          }
           // await console.log(chalk.green('JS processing task completed.'));
         } else {
           await allBuild();

@@ -1,11 +1,11 @@
 import path from 'path';
 
-const srcBase = 'src/';
-const distBase = 'dist/';
+const srcBase = 'src/assets/';
+const distBase = 'dist/assets/';
 
 const dir = {
   src: {
-    root: path.join(srcBase),
+    root: path.join('src/'),
     html: path.join(srcBase, 'html/'),
     ejs: path.join(srcBase, 'ejs/'),
     php: path.join(srcBase, 'php/'),
@@ -16,9 +16,9 @@ const dir = {
     font: path.join(srcBase, 'font/'),
   },
   dist: {
-    root: path.join(distBase),
-    html: path.join(distBase),
-    php: path.join(distBase),
+    root: path.join('dist/'),
+    html: path.join('dist/'),
+    php: path.join('dist/'),
     css: path.join(distBase, 'css/'),
     js: path.join(distBase, 'js/'),
     img: path.join(distBase, 'img/'),

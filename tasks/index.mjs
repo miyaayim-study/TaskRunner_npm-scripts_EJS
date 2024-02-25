@@ -3,7 +3,7 @@ module
 ************************************************/
 import path from 'path';
 import { glob } from 'glob';
-import chalk from 'chalk'; // ログのテキストを装飾するモジュール
+import chalk from 'chalk';
 
 /************************************************
 my config
@@ -87,6 +87,7 @@ const execution = async (mode, type) => {
         // watchTask({ watchSrc: dir.src.css, task: copyCssTask, mode: mode }),
         // watchTask({ watchSrc: dir.src.js, task: copyJsTask, mode: mode }),
       ]);
+      // await console.log(chalk.green('watchTask has completed.'));
     }
 
     if (mode === 'build_one') {

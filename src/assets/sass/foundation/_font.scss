@@ -1,0 +1,21 @@
+// Noto Sans Japanese (Google Font)【ゴシック体】
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+// Square Font【フリースクエアフォント】
+@font-face {
+  font-family: 'Square Font';
+  src: url('/assets/font/Square.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Squareo Font';
+  src: url('/assets/font/Squareo.ttf') format('truetype');
+  font-weight: 400;
+}
+
+// Hyperspace【フリースクエアフォント】
+@font-face {
+  font-family: 'Hyperspace';
+  src: url('/assets/font/Hyperspace Bold.otf') format('opentype');
+  font-weight: 700;
+}

@@ -1,0 +1,124 @@
+// 追加したリセットCSS
+
+// [role="button"],
+// [type="button"],
+// [type="reset"],
+// [type="submit"],
+// button {
+//   color: inherit;
+// }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+// body {
+//   min-height: 100vh;
+// }
+
+// address {
+//   font-style: normal;
+// }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  // text-wrap: balance;
+}
+
+// 見出しやインタラクティブ要素のline-heightを設定
+h1,
+h2,
+h3,
+h4,
+button,
+input,
+label {
+  line-height: 1.2;
+}
+
+// ul,
+// ol {
+//   list-style: none;
+// }
+
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// a[class] {
+//   text-decoration: none;
+// }
+
+// a,
+// form,
+// iframe {
+//   outline: 0;
+//   border: 0;
+// }
+
+// a:link,
+// a:hover,
+// a:visited {
+//   text-decoration: none;
+//   color: inherit;
+// }
+
+// picture,
+img {
+  max-width: 100%;
+  height: auto;
+  // line-height: 0;
+  vertical-align: bottom;
+}
+
+// inputやbuttonなどのfontは継承
+// input, button,
+// textarea, select {
+//   font: inherit;
+// }
+
+// rows属性のないtextareasが小さくならないようにする
+// textarea:not([rows]) {
+//   min-height: 10em;
+// }
+
+// span {
+//   font-size: inherit;
+//   font-weight: inherit;
+// }
+
+// @media (min-width: 768px) {
+//   a:hover {
+//     text-decoration: none;
+//   }
+// }
+
+// 電話リンク
+// .sp-tel {
+//   display: inline-block;
+// }
+// @media (min-width: 768px) {
+//   a[href^='tel:'],
+//   a.sp-tel[href^='tel:'] {
+//     pointer-events: none;
+//   }
+// }
+// FAX番号用
+// .no-tel, .no-tel * {
+//   pointer-events: none !important;
+//   text-decoration: none !important;
+// }

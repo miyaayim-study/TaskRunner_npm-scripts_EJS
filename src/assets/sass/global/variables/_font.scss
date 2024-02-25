@@ -1,0 +1,94 @@
+//* color
+
+
+// $c-1ry: #000;
+// $c-2ry: #000;
+// $c-3ry: #000;
+// $c-4ry: #000;
+
+// 色 優先順位
+$c-main: rgb(130, 54, 56);
+$c-sub: rgb(189, 103, 102);
+$c-sub2: #FFE4E1;
+
+
+// 色名
+$c-blk: #000;
+$c-blk2: rgb(41, 46, 43);
+$c-wht: #fff;
+$c-wht2: #ddd;
+
+// 色 仕様箇所
+$c-txt: rgb(51, 51, 51);
+$c-bg: #fff;
+
+
+
+//* font-family
+// 日本語フォント
+$ff-noto-sans: 'Noto Sans JP', sans-serif;
+// $ff-noto-serif: 'Noto Serif JP', serif;
+// $ff-shi: 'Shippori Mincho', serif;
+// $ff-m1p: 'M PLUS 1p', sans-serif;
+// $ff-m1c: 'M PLUS Rounded 1c', sans-serif;
+// $ff-zeng: 'Zen Kaku Gothic New', sans-serif;
+// $ff-zenm: 'Zen Maru Gothic', serif;
+// $ff-zeno: 'Zen Old Mincho', serif;
+// $ff-kiw: 'Kiwi Maru', serif;
+// $ff-dot: 'DotGothic16', sans-serif;
+// $ff-biz: 'BIZ UDPGothic', sans-serif;
+// $ff-sawg: 'Sawarabi Gothic', sans-serif;
+// $ff-sawm: 'Sawarabi Mincho', serif;
+// $ff-del: 'Dela Gothic One', sans-serif;
+// $ff-kur: 'Zen Kurenaido', sans-serif;
+
+// 欧文フォント
+// $ff-rob: 'Roboto', sans-serif;
+// $ff-ope: 'Open Sans', sans-serif;
+// $ff-pop: 'Poppins', sans-serif;
+// $ff-lat: 'Lato', sans-serif;
+// $ff-mon: 'Montserrat', sans-serif;
+// $ff-qui: 'Quicksand', sans-serif;
+// $ff-osw: 'Oswald', sans-serif;
+// $ff-ral: 'Raleway', sans-serif;
+// $ff-sla13: 'Slabo 13px', serif;
+// $ff-sla27: 'Slabo 27px', serif;
+// $ff-car: 'Cardo', serif;
+// $ff-cor: 'Cormorant Garamond', serif;
+// $ff-sor: 'Sorts Mill Goudy', serif;
+// $ff-jos: 'Josefin Sans', sans-serif;
+// $ff-pts: 'PT Sans', sans-serif;
+$ff-ant: 'Anton', sans-serif;
+// $ff-dan: 'Dancing Script', cursive;
+// $ff-cab: 'Cabin Sketch', sans-serif;
+// $ff-mil: 'Miltonian', serif;
+// $ff-milt: 'Miltonian Tattoo', serif;
+// $ff-rub: 'Rubik Dirt', sans-serif;
+
+
+//* font-weight
+$fw-thin: 100;
+$fw-ultraLight: 100;
+$fw-extraLight: 200;
+$fw-light: 300;
+$fw-regular: 400;
+$fw-normal: 400;
+$fw-semiLight: 400;
+$fw-medium: 500;
+$fw-semiBold: 600;
+$fw-demiBold: 600;
+$fw-bold: 700;
+$fw-extraBold: 800;
+$fw-ultraBold: 900;
+$fw-black: 900;
+$fw-heavy: 900;
+
+$fw-w1: 100;
+$fw-w2: 200;
+$fw-w3: 300;
+$fw-w4: 400;
+$fw-w5: 500;
+$fw-w6: 600;
+$fw-w7: 700;
+$fw-w8: 800;
+$fw-w9: 900;
