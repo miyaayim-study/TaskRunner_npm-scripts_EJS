@@ -2,17 +2,32 @@
 @use 'global' as *;
 
 :root {
-  --main: 131, 54, 56;
-  --sub: 189, 103, 102;
-  --white: 255, 255, 255;
-  --black: 0, 0, 0;
+  //* -------------------------------------------------------
+  //* 色
+  //* -------------------------------------------------------
+  --color_white: 255, 255, 255;
+  --color_black: 0, 0, 0;
 
+  //* -------------------------------------------------------
+  //* フォント
+  //* -------------------------------------------------------
+  --font_noto: 'Noto Sans JP', sans-serif;
+  // --font_roboto: 'Roboto', sans-serif;
+  --font_roboto: 'Roboto Flex', sans-serif;
+
+  --font_jp: 'Noto Sans JP', sans-serif;
+  --font_en: 'Roboto Flex', sans-serif;
+
+  //* -------------------------------------------------------
+  //* 余白、間隔
+  //* -------------------------------------------------------
   --contents_width: 1100px;
   // --contents_width_wide: 1400px;
   --body_padding_side: 60px;
   // --body_padding_side: 5%;
   --vw: calc(100vw - var(--scrollbarWidth));
 }
+
 // html {
 //   overflow-y: scroll;
 //   box-sizing: border-box;
@@ -24,6 +39,11 @@
 
 body {
   position: relative;
+  font-family: var(--font_noto);
+  font-weight: 400;
+  color: rgb(var(--color_black));
+  line-height: 1.75;
+  letter-spacing: 0;
 }
 
 body.is-fixed {
