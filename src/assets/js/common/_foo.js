@@ -1,5 +1,6 @@
-const hoge = () => {
-  console.log('_hoge.js');
+const foo = () => {
+  const testJsFoo = document.querySelector('.js-test-js-foo');
+  testJsFoo.style.color = 'green';
 };
 
-export default hoge;
+export default foo;

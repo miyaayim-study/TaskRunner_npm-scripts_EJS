@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
+import isExcludedPath from './isExcludedPath.mjs';
 import eslint from './eslint.mjs';
 
 const jsTask = async ({ mode, watchEvent, watchPath }) => {
@@ -15,18 +16,15 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
 
   // 除外フォルダがファイルパスに含まれているかを判定
   const isInIgnoredDirectory = (filePath) => {
-    return IGNORED_INPUT_DIR.some(dir => filePath.includes(`\\${dir}\\`) || filePath.startsWith(`${dir}\\`) || filePath.endsWith(`\\${dir}`));
+    return IGNORED_INPUT_DIR.some(
+      (dir) => filePath.includes(`\\${dir}\\`) || filePath.startsWith(`${dir}\\`) || filePath.endsWith(`\\${dir}`),
+    );
   };
 
   const jsBuild = async ({ jsFilePath }) => {
     const inputPath = jsFilePath;
-    const outputDir = path.join(
-      outputBaseDir,
-      path.relative(inputBaseDir, path.dirname(inputPath))
-    );
-    const outputPath = path
-      .join(outputBaseDir, path.relative(inputBaseDir, inputPath))
-      .replace('index.js', 'main.js'); // パスのindex.jsという部分をmain.jsに置き換える
+    const outputDir = path.join(outputBaseDir, path.relative(inputBaseDir, path.dirname(inputPath)));
+    const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath)).replace('index.js', 'main.js'); // パスのindex.jsという部分をmain.jsに置き換える
 
     // 出力先パスまでのフォルダが存在しない場合は作成
     // `recursive: true` にすることで、ディレクトリ構造が深い場合も再帰的にフォルダ作成を行う。
@@ -52,9 +50,7 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
       // await console.log(chalk.green('JavaScript build completed successfully.'));
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('jsBuild')}.: ${chalk.bold.italic.bgRed(
-          error.name
-        )} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('jsBuild')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
       );
     }
   };
@@ -62,10 +58,7 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
   // 除外フォルダの場合のコピー処理内容
   const copyJsFile = async ({ jsFilePath }) => {
     const inputPath = jsFilePath;
-    const outputDir = path.join(
-      outputBaseDir,
-      path.relative(inputBaseDir, path.dirname(inputPath))
-    );
+    const outputDir = path.join(outputBaseDir, path.relative(inputBaseDir, path.dirname(inputPath)));
     const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath));
 
     try {
@@ -79,9 +72,9 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
       // await console.log(chalk.green('File copied completed successfully.:'), chalk.underline(inputPath));
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('copyJsFile')}.: ${chalk.bold.italic.bgRed(
-          error.name
-        )} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('copyJsFile')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
@@ -102,17 +95,14 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
       windowsPathsNoEscape: true,
     });
 
-    // src/js内の'_'で始まるファイル名を除いた全てのJSファイルを取得
+    // src/js内の'_'で始まるディレクトリ名とファイル名を除いた全てのJSファイルを取得
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const jsFilePathsPromise = glob(path.join(inputBaseDir, '**/!(_)*.js'), {
       windowsPathsNoEscape: true,
     });
 
     // jsAllFilePathsPromiseとjsFilePathsPromiseを並列実行して分割代入
-    const [jsAllFilePaths, jsFilePaths] = await Promise.all([
-      jsAllFilePathsPromise,
-      jsFilePathsPromise,
-    ]);
+    const [jsAllFilePaths, jsFilePaths] = await Promise.all([jsAllFilePathsPromise, jsFilePathsPromise]);
 
     // const [jsAllFilePaths, jsFilePaths]が終わってから下記を実行
     // src/js内の全てのJSファイルを構文チェック
@@ -161,22 +151,22 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
     if (watchEvent === 'unlinkDir') {
       await deleteDist();
 
-      // 監視タスクの監視イベントがJSファイル削除の場合（'_'で始まるファイル名は除く）
+      // 監視タスクの監視イベントがJSファイル削除の場合（'_'で始まるディレクトリ名とファイル名は除く）
     } else if (
       watchEvent === 'unlink' &&
       path.basename(watchPath).endsWith('.js') &&
-      !path.basename(watchPath).startsWith('_')
+      !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
     ) {
       await deleteDist();
 
       // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当するJSファイルのみをレンダリング（'_'で始まるファイル名は除く）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当するJSファイルのみをレンダリング（'_'で始まるディレクトリ名とファイル名は除く）
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
           watchPath.endsWith('.js') &&
-          !path.basename(watchPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
         ) {
           // 除外フォルダ内のファイルパスの場合はcopyJsFileを実行、それ以外はjsBuildを実行
           if (isInIgnoredDirectory(watchPath)) {
@@ -196,9 +186,7 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('jsTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-        error.message
-      )}`
+      `Error in ${chalk.underline('jsTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

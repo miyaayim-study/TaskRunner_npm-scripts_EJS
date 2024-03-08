@@ -1,5 +1,5 @@
-import hoge from './common/_hoge.js';
-hoge();
+import hoge from './common/_hoge';
+import foo from './common/_foo';
 
-import foo from './common/_foo.js';
+hoge();
 foo();

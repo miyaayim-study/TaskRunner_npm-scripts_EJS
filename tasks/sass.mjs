@@ -8,6 +8,7 @@ import autoprefixer from 'autoprefixer'; // 自動プレフィックスを追加
 // import cssnano from 'cssnano'; // CSSファイル圧縮のためのPostCSSプラグイン
 import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
+import isExcludedPath from './isExcludedPath.mjs';
 import sassGlob from './sassGlob.mjs'; // 自作のsassファイル専用のglobモジュール
 import stylelint from './stylelint.mjs';
 
@@ -66,7 +67,7 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
             console.error(
               'Error rendering CSS file:',
               chalk.bold.italic.bgRed(writeError.name),
-              chalk.red(writeError.message)
+              chalk.red(writeError.message),
             );
             reject(writeError);
           } else {
@@ -77,9 +78,9 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
       });
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('compileSass')}.: ${chalk.bold.italic.bgRed(
-          error.name
-        )} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('compileSass')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
@@ -98,7 +99,7 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
 
   // 全てのファイルをコンパイル
   const allCompile = async () => {
-    // 指定したディレクトリ内の全てのSassファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+    // 指定したディレクトリ内の全てのSassファイルのファイルパスを取得（'_'で始まるディレクトリ名とファイル名は除く）
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const sassFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.scss'), {
       windowsPathsNoEscape: true,
@@ -116,23 +117,23 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     if (watchEvent === 'unlinkDir') {
       await deleteDist();
 
-      // 監視タスクの監視イベントがSassファイル削除の場合（'_'で始まるファイル名は除く）
+      // 監視タスクの監視イベントがSassファイル削除の場合（'_'で始まるディレクトリ名とファイル名は除く）
     } else if (
       watchEvent === 'unlink' &&
       path.basename(watchPath).endsWith('.scss') &&
-      !path.basename(watchPath).startsWith('_')
+      !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
     ) {
       const isChangedExtension = true;
       await deleteDist(isChangedExtension);
 
       // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクの監視イベントが追加・変更の場合、監視で検知したSassファイルのみをレンダリング（'_'で始まるファイル名は除く）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知したSassファイルのみをレンダリング（'_'で始まるディレクトリ名とファイル名は除く）
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
           path.basename(watchPath).endsWith('.scss') &&
-          !path.basename(watchPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
         ) {
           // 監視イベントが追加か変更かつ、それがSassファイルであり、ファイル名の先頭が'_'ではない場合に実行
           await compileSass({ sassFilePath: watchPath });
@@ -150,9 +151,7 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('sassTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-        error.message
-      )}`
+      `Error in ${chalk.underline('sassTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

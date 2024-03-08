@@ -22,6 +22,7 @@ import watchTask from './watch.mjs';
 import { server } from './server.mjs';
 import eslint from './eslint.mjs';
 import stylelint from './stylelint.mjs';
+import markuplint from './markuplint.mjs';
 import copyFontTask from './copyFont.mjs';
 
 // import copyHtmlTask from './copyHtml.mjs';
@@ -38,16 +39,15 @@ const executeTask = async ({ task, mode, type }) => {
     await taskFunction({ mode: mode, type: type });
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline(taskFunction.name)}.: ${chalk.bold.italic.bgRed(
-        error.name
-      )} ${chalk.red(error.message)}`
+      `Error in ${chalk.underline(taskFunction.name)}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+        error.message,
+      )}`,
     );
   }
 };
 
 const execution = async (mode, type) => {
   try {
-
     if (mode === 'development' || mode === 'build') {
       const deleteMode = 'all';
       await Promise.all([executeTask({ task: deleteTask, mode: deleteMode })]);
@@ -91,7 +91,6 @@ const execution = async (mode, type) => {
     }
 
     if (mode === 'build_one') {
-
       const deleteMode = 'all';
       await Promise.all([executeTask({ task: deleteTask, mode: deleteMode })]);
 
@@ -127,6 +126,16 @@ const execution = async (mode, type) => {
     }
 
     if (mode === 'lint') {
+      if (type === 'html') {
+        // distフォルダ内のHTMLファイルの構文チェック
+        // ここはsrcフォルダ内のEJSに修正したいかも。
+        const filePaths = await glob(path.join(dir.dist.html, '**/*.html'), {
+          windowsPathsNoEscape: true,
+        });
+        for (const filePath of filePaths) {
+          await markuplint({ filePath: filePath });
+        }
+      }
       if (type === 'sass') {
         // scssファイルの構文チェック
         await stylelint();
@@ -151,9 +160,7 @@ const execution = async (mode, type) => {
     }
   } catch {
     await console.error(
-      `Error in ${chalk.underline('execution')}: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-        error.message
-      )}`
+      `Error in ${chalk.underline('execution')}: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   } finally {
     await console.log(chalk.bgGreen.bold('All operations completed.'));

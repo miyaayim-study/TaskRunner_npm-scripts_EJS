@@ -1,15 +1,16 @@
-import fs from "fs";
-import path from "path";
-import { glob } from "glob";
-import chalk from "chalk";
-import imagemin from "imagemin-keep-folder"; // フォルダの構造を保持するためのモジュール
-import imageminMozjpeg from "imagemin-mozjpeg"; // JPEG画像を最適化するためのモジュール
-import imageminPngquant from "imagemin-pngquant"; // PNG画像を最適化するためのモジュール
-import imageminGifsicle from "imagemin-gifsicle"; // GIF画像を最適化するためのモジュール
-import imageminSvgo from "imagemin-svgo"; // SVG画像を最適化するためのモジュール
-import imageminWebp from "imagemin-webp"; // webp変換するためのモジュール
-import dir from "./dir.mjs";
-import deleteTask from "./delete.mjs";
+import fs from 'fs';
+import path from 'path';
+import { glob } from 'glob';
+import chalk from 'chalk';
+import imagemin from 'imagemin-keep-folder'; // フォルダの構造を保持するためのモジュール
+import imageminMozjpeg from 'imagemin-mozjpeg'; // JPEG画像を最適化するためのモジュール
+import imageminPngquant from 'imagemin-pngquant'; // PNG画像を最適化するためのモジュール
+import imageminGifsicle from 'imagemin-gifsicle'; // GIF画像を最適化するためのモジュール
+import imageminSvgo from 'imagemin-svgo'; // SVG画像を最適化するためのモジュール
+import imageminWebp from 'imagemin-webp'; // webp変換するためのモジュール
+import dir from './dir.mjs';
+import deleteTask from './delete.mjs';
+import isExcludedPath from './isExcludedPath.mjs';
 
 const imgTask = async ({ watchEvent, watchPath }) => {
   const inputBaseDir = dir.src.img;
@@ -28,34 +29,35 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
           // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
           replaceOutputDir: (output) => {
-            return output.replace(/img\//, path.join("../../", outputBaseDir));
+            return output.replace(/img\//, path.join('../../', outputBaseDir));
           },
         });
         // await console.log(chalk.green('Image(jpg,jpeg,png) optimization  completed successfully.'));
       };
 
       let inputPath;
-      if (taskType == "all") {
-        const extension = ".{jpg,jpeg,png,JPG,JPEG,PNG}";
+      if (taskType == 'all') {
+        const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
-      if (taskType == "one") {
+      if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(jpg|jpeg|png)$/i;
         if (
           validExtensions.test(inputPath) &&
-          !path.basename(inputPath).startsWith("_")
+          //  !path.basename(inputPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
         }
       }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline(
-          "optimizeWebpConvertibleImages"
-        )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('optimizeWebpConvertibleImages')}.: ${chalk.bold.italic.bgRed(
+          error.name,
+        )} ${chalk.red(error.message)}`,
       );
     }
   };
@@ -70,34 +72,35 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
           // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
           replaceOutputDir: (output) => {
-            return output.replace(/img\//, path.join("../../", outputBaseDir));
+            return output.replace(/img\//, path.join('../../', outputBaseDir));
           },
         });
         // await console.log(chalk.green('Image(gif,svg) optimization  completed successfully.'));
       };
 
       let inputPath;
-      if (taskType == "all") {
-        const extension = ".{gif,svg,GIF,SVG}";
+      if (taskType == 'all') {
+        const extension = '.{gif,svg,GIF,SVG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
-      if (taskType == "one") {
+      if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(gif|svg)$/i;
         if (
           validExtensions.test(inputPath) &&
-          !path.basename(inputPath).startsWith("_")
+          //  !path.basename(inputPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
         }
       }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline(
-          "optimizeNonWebpImages"
-        )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('optimizeNonWebpImages')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
@@ -111,34 +114,35 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           // imagemin-keep-folder プラグインのオプションにてファイル構造を保持
           // 正規表現 /img\// を使って、出力先パス内の /img/ を ../dist/img/ に置換しています。これにより、元の画像の出力先フォルダが img から dist/img に変更されます。
           replaceOutputDir: (output) => {
-            return output.replace(/img\//, path.join("../../", outputBaseDir));
+            return output.replace(/img\//, path.join('../../', outputBaseDir));
           },
         });
         // await console.log(chalk.green('WebP image generate completed successfully.'));
       };
 
       let inputPath;
-      if (taskType == "all") {
-        const extension = ".{jpg,jpeg,png,JPG,JPEG,PNG}";
+      if (taskType == 'all') {
+        const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
-      if (taskType == "one") {
+      if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(jpg|jpeg|png)$/i;
         if (
           validExtensions.test(inputPath) &&
-          !path.basename(inputPath).startsWith("_")
+          //  !path.basename(inputPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
         }
       }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline(
-          "generateWebpImages"
-        )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('generateWebpImages')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
@@ -147,14 +151,8 @@ const imgTask = async ({ watchEvent, watchPath }) => {
   const copyNotImages = async (srcPath, taskType) => {
     const copyNotImageFile = async ({ copyFilePath }) => {
       const inputPath = copyFilePath;
-      const outputDir = path.join(
-        outputBaseDir,
-        path.relative(inputBaseDir, path.dirname(inputPath))
-      );
-      const outputPath = path.join(
-        outputBaseDir,
-        path.relative(inputBaseDir, inputPath)
-      );
+      const outputDir = path.join(outputBaseDir, path.relative(inputBaseDir, path.dirname(inputPath)));
+      const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath));
 
       try {
         // 出力先パスまでのフォルダが存在しない場合は作成
@@ -167,23 +165,21 @@ const imgTask = async ({ watchEvent, watchPath }) => {
         // await console.log(chalk.green('Not image file copied completed successfully.:'), chalk.underline(inputPath));
       } catch (error) {
         await console.error(
-          `Error in ${chalk.underline(
-            "copyNotImageFile"
-          )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-            error.message
-          )}`
+          `Error in ${chalk.underline('copyNotImageFile')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+            error.message,
+          )}`,
         );
       }
     };
 
     // 全ファイルコピー（タスク開始時用）
-    if (taskType == "all") {
+    if (taskType == 'all') {
       // オプション内容について、
       // ignore：指定したディレクトリとディレクトリ配下のファイルを無視
       // nodir：ディレクトリにはマッチせず、ファイルにのみマッチする。
       // windowsPathsNoEscape：Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
-      const copyFilePaths = await glob(path.join(inputBaseDir, "**/!(_)*"), {
-        ignore: ["**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}"],
+      const copyFilePaths = await glob(path.join(inputBaseDir, '!(_)**/!(_)*'), {
+        ignore: ['**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'],
         nodir: true,
         windowsPathsNoEscape: true,
       });
@@ -194,12 +190,13 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
 
     // 1つのファイルをコピー（監視タスク用）
-    if (taskType == "one") {
+    if (taskType == 'one') {
       // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
       const validExtensions = /\.(jpg|jpeg|png|gif|svg)$/i;
       if (
         !validExtensions.test(watchPath) &&
-        !path.basename(srcPath).startsWith("_")
+        //  !path.basename(srcPath).startsWith('_')
+        !isExcludedPath({ basePath: inputBaseDir, targetPath: srcPath })
       ) {
         await copyNotImageFile({ copyFilePath: srcPath });
       }
@@ -211,12 +208,12 @@ const imgTask = async ({ watchEvent, watchPath }) => {
   // ・useIfPossible … Webp画像を生成する。
   // ・fallback … 通常の圧縮画像生成とWebp画像生成の両方を行う。
   const imageOptimizer = async (srcPath, taskType) => {
-    const optimizationMode = "noWebp";
+    const optimizationMode = 'noWebp';
     // const optimizationMode = 'useIfPossible';
     // const optimizationMode = 'fallback';
     try {
       switch (optimizationMode) {
-        case "noWebp":
+        case 'noWebp':
           await Promise.all([
             optimizeWebpConvertibleImages(srcPath, taskType),
             optimizeNonWebpImages(srcPath, taskType),
@@ -225,7 +222,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
 
           break;
 
-        case "useIfPossible":
+        case 'useIfPossible':
           await Promise.all([
             generateWebpImages(srcPath, taskType),
             optimizeNonWebpImages(srcPath, taskType),
@@ -233,7 +230,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           ]);
           break;
 
-        case "fallback":
+        case 'fallback':
           await Promise.all([
             optimizeWebpConvertibleImages(srcPath, taskType),
             generateWebpImages(srcPath, taskType),
@@ -243,61 +240,55 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           break;
 
         default:
-          throw new Error("Invalid webpMode");
-          // await console.log(`Failed to delete. Invalid mode. Please specify ${chalk.underline(deleteMode)} correctly.`);
+          throw new Error('Invalid webpMode');
+        // await console.log(`Failed to delete. Invalid mode. Please specify ${chalk.underline(deleteMode)} correctly.`);
       }
     } catch {
       await console.error(
-        `Error in ${chalk.underline(
-          "imageOptimizer"
-        )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('imageOptimizer')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
 
   // 監視イベントが削除の場合の処理内容
   const deleteDist = async () => {
-    const distPath = path.join(
-      outputBaseDir,
-      path.relative(inputBaseDir, watchPath)
-    );
+    const distPath = path.join(outputBaseDir, path.relative(inputBaseDir, watchPath));
     const extension = path.extname(watchPath); // 現在の拡張子を取得
     // ファイルパスの拡張子をwebpに変換
-    const distPathWebp = path.join(
-      path.dirname(distPath),
-      path.basename(distPath, extension) + ".webp"
-    );
+    const distPathWebp = path.join(path.dirname(distPath), path.basename(distPath, extension) + '.webp');
 
     // Promise.allを使ってタスクを並列で実行
     await Promise.all([
-      deleteTask({ mode: "one", path: distPath }), // webpではない画像ファイルを削除
-      deleteTask({ mode: "one", path: distPathWebp }), // webpの画像ファイルを削除
+      deleteTask({ mode: 'one', path: distPath }), // webpではない画像ファイルを削除
+      deleteTask({ mode: 'one', path: distPathWebp }), // webpの画像ファイルを削除
     ]);
   };
 
   try {
     // 監視タスクの監視イベントが削除の場合
-    if (watchEvent === "unlinkDir" || watchEvent === "unlink") {
+    if (watchEvent === 'unlinkDir' || watchEvent === 'unlink') {
       // 監視イベントで削除を受け取った場合の処理
       await deleteDist();
 
       // 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみを圧縮（'_'で始まるファイル名は除く）
+      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみを圧縮（'_'で始まるディレクトリ名とファイル名は除く）
       if (watchPath) {
         if (
-          (watchEvent === "add" || watchEvent === "change") &&
-          !path.basename(watchPath).startsWith("_")
+          (watchEvent === 'add' || watchEvent === 'change') &&
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
         ) {
           const srcPath = watchPath;
-          const taskType = "one";
+          const taskType = 'one';
           await imageOptimizer(srcPath, taskType);
         }
 
         // 監視タスク以外の場合は、全てのファイルを圧縮
       } else {
-        const srcPath = path.join(inputBaseDir, "**/!(_)*");
-        const taskType = "all";
+        const srcPath = path.join(inputBaseDir, '!(_)**/!(_)*');
+        const taskType = 'all';
         await imageOptimizer(srcPath, taskType);
       }
 
@@ -308,9 +299,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline("imgTask")}.: ${chalk.bold.italic.bgRed(
-        error.name
-      )} ${chalk.red(error.message)}`
+      `Error in ${chalk.underline('imgTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

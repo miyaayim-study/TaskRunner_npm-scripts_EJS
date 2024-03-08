@@ -10,22 +10,20 @@ const lintCss = () => {
 
   stylelint
     .lint({
-      files: inputPath, // CSSコードを直接指定
+      files: inputPath,
       // configFile: path.join(dir.config, '.stylelintrc.js'), // コンフィグファイルを移動する際に使用
       formatter: 'string', // 出力フォーマットを指定、これがないと日本語のエラーログにならない。
     })
     .then((data) => {
       if (data.errored) {
         console.error(data.output); // エラーメッセージをコンソールに出力
-      // } else {
+        // } else {
         // console.log(chalk.green('CSS Linting completed successfully.'));
       }
     })
     .catch((error) => {
       console.error(
-        `Error in ${chalk.underline('stylelint')}.: ${chalk.bold.italic.bgRed(
-          error.name
-        )} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('stylelint')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
       );
     });
 };

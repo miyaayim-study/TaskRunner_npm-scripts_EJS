@@ -2,11 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import { glob } from 'glob';
 import ejs from 'ejs';
-import * as prettier from 'prettier';
 import chalk from 'chalk';
+// import * as prettier from 'prettier';
+import jsBeautify from 'js-beautify';
+const { html: beautify_html } = jsBeautify;
 import dir from './dir.mjs';
 import deleteTask from './delete.mjs';
+import isExcludedPath from './isExcludedPath.mjs';
 import eslint from './eslint.mjs';
+import markuplint from './markuplint.mjs';
+import jsBeautifyOptions from '../.jsbeautifyrc.js';
 
 const ejsTask = async ({ mode, watchEvent, watchPath }) => {
   const taskMode = mode;
@@ -17,14 +22,9 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
   const renderingEjs = async ({ ejsFilePath }) => {
     // 出力先のディレクトリパスとファイルパスを作成、ファイルパスはこの時点で'.ejs'から'.html'に拡張子変更
     const inputPath = ejsFilePath;
-    const inputPathData = fs.readFileSync(inputPath, 'utf8');
-    const outputDir = path.join(
-      outputBaseDir,
-      path.relative(inputBaseDir, path.dirname(inputPath))
-    );
-    const outputPath = path
-      .join(outputBaseDir, path.relative(inputBaseDir, inputPath))
-      .replace('.ejs', '.html');
+    // const inputPathData = fs.readFileSync(inputPath, 'utf8');
+    const outputDir = path.join(outputBaseDir, path.relative(inputBaseDir, path.dirname(inputPath)));
+    const outputPath = path.join(outputBaseDir, path.relative(inputBaseDir, inputPath)).replace('.ejs', '.html');
 
     // EJSファイルをレンダリングしてHTMLに変換
     // オプションとして、JSONファイルの読み込み
@@ -51,12 +51,28 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
         });
       });
 
-      // Prettierを使用してHTMLコードを整形
-      const formattedResult = await prettier.format(renderedResult, { parser: 'html' });
+      // // Prettierを使用してHTMLコードを整形
+      // // .prettierrc.jsの設定を読み込む。
+      // const config = await prettier.resolveConfig('.prettierrc');
+      // // resolveConfigで読み込んだ設定に、必要に応じて追加のオプションをマージします。
+      // // ここでは、パーサーを指定しています。
+      // const options = {
+      //   ...config,
+      //   parser: 'html',
+      // };
+      // // HTMLコードをprettierでフォーマット（整形）
+      // const formattedResult = await prettier.format(renderedResult, options);
+
+      // HTMLコードをjs-beautifyでフォーマット（整形）（主にインデント幅と改行の整形のみ）
+      // オプションで.jsbeautifyrc.jsファイルの設定を読み込む
+      const formattedResult = await beautify_html(renderedResult, jsBeautifyOptions);
 
       // HTMLデータを指定した出力先に生成
       fs.writeFileSync(outputPath, formattedResult, 'utf8');
       // await console.log(chalk.green('HTML file written completed successfully.:'), chalk.underline(outputPath));
+
+      // Markuplintを使用して出力したHTMLコードをチェック
+      await markuplint({ filePath: outputPath });
 
       // ESLintを使用して出力したHTMLコード内のJavascriptの構文チェック
       if (taskMode === 'build') {
@@ -67,9 +83,9 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
       }
     } catch (error) {
       await console.error(
-        `Error in ${chalk.underline('renderingEjs')}.: ${chalk.bold.italic.bgRed(
-          error.name
-        )} ${chalk.red(error.message)}`
+        `Error in ${chalk.underline('renderingEjs')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
+          error.message,
+        )}`,
       );
     }
   };
@@ -88,7 +104,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
 
   const allRendering = async () => {
     // 全てのファイルをレンダリング
-    // 指定したディレクトリ内の全てのEJSファイルのファイルパスを取得（'_'で始まるファイル名は除く）
+    // 指定したディレクトリ内の全てのEJSファイルのファイルパスを取得（'_'で始まるディレクトリ名とファイル名は除く）
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const ejsFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.ejs'), {
       windowsPathsNoEscape: true,
@@ -114,7 +130,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
     } else if (
       watchEvent === 'unlink' &&
       path.basename(watchPath).endsWith('.ejs') &&
-      !path.basename(watchPath).startsWith('_')
+      !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
     ) {
       const isChangedExtension = true;
       await deleteDist(isChangedExtension);
@@ -126,7 +142,8 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
           watchPath.endsWith('.ejs') &&
-          !path.basename(watchPath).startsWith('_')
+          !isExcludedPath({ basePath: inputBaseDir, targetPath: watchPath })
+          ///// !path.basename(watchPath).startsWith('_') //ファイル名だけに限定したい場合はこっち
         ) {
           await renderingEjs({ ejsFilePath: watchPath });
           // await console.log(chalk.green('EJS processing task completed.'));
@@ -141,9 +158,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('ejsTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-        error.message
-      )}`
+      `Error in ${chalk.underline('ejsTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

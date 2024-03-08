@@ -24,19 +24,15 @@ const watchTask = async ({ watchSrc, task, taskSrc, taskDist, mode }) => {
         }
       } catch (error) {
         await console.error(
-          `An error occurred while executing the task for ${chalk.underline(
-            watchEvent
-          )} at ${chalk.underline(watchPath)}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-            error.message
-          )}`
+          `An error occurred while executing the task for ${chalk.underline(watchEvent)} at ${chalk.underline(
+            watchPath,
+          )}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
         );
       }
     });
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('watchTask')}.: ${chalk.bold.italic.bgRed(
-        error.name
-      )} ${chalk.red(error.message)}`
+      `Error in ${chalk.underline('watchTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

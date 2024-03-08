@@ -49,9 +49,7 @@ const deleteTask = async ({ mode, path }) => {
     }
   } catch {
     await console.error(
-      `Error in ${chalk.underline('deleteTask')}.: ${chalk.bold.italic.bgRed(
-        error.name
-      )} ${chalk.red(error.message)}`
+      `Error in ${chalk.underline('deleteTask')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };

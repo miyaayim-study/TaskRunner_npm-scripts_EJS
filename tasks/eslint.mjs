@@ -32,9 +32,7 @@ const lintJs = async ({ filePath, mode }) => {
     }
   } catch (error) {
     await console.error(
-      `Error in ${chalk.underline('lintJs')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(
-        error.message
-      )}`
+      `Error in ${chalk.underline('lintJs')}.: ${chalk.bold.italic.bgRed(error.name)} ${chalk.red(error.message)}`,
     );
   }
 };
