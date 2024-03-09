@@ -66,8 +66,9 @@ const copyPhp = async ({ watchEvent, watchPath }) => {
       } else {
         // 指定したディレクトリ内の全てのファイルのファイルパスを取得（'_'で始まるディレクトリ名とファイル名は除く）
         // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
-        const copyFilePaths = await glob(path.join(inputBaseDir, '!(_)**/!(_)*' + extension), {
+        const copyFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*' + extension), {
           windowsPathsNoEscape: true,
+          ignore: '**/_*/**',
         });
 
         for (const copyFilePath of copyFilePaths) {
