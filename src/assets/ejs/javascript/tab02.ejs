@@ -1,0 +1,62 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+  <script src="/assets/js/page/javascript/tab02.js" defer></script>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+
+    <dl class="tab js-tab">
+
+      <dt class="tab__title is-active">
+        <button type="button" class="tab__button js-tab-trigger" data-trigger="01">タブ1</button>
+      </dt>
+      <dd class="tab__desc js-tab-target is-show" data-target="01">パネル1</dd>
+
+      <dt class="tab__title">
+        <button type="button" class="tab__button js-tab-trigger" data-trigger="02">タブ2</button>
+      </dt>
+      <dd class="tab__desc js-tab-target" data-target="02">パネル2</dd>
+
+      <dt class="tab__title">
+        <button type="button" class="tab__button js-tab-trigger" data-trigger="03">タブ3</button>
+      </dt>
+      <dd class="tab__desc js-tab-target" data-target="03">パネル3</dd>
+
+    </dl>
+
+
+
+
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

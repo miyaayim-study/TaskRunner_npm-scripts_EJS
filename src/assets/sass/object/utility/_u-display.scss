@@ -1,0 +1,73 @@
+@use 'global' as *;
+
+//* -------------------------------------------------------
+//* 単一プロパティ
+//* -------------------------------------------------------
+.u-inline-block {
+  display: inline-block;
+}
+
+//* -------------------------------------------------------
+//* 表示・非表示
+//* -------------------------------------------------------
+@include mq(md) {
+  .u-view--md {
+    display: none;
+  }
+}
+@include mq-not(md) {
+  .u-viewNot--md {
+    display: none;
+  }
+}
+
+// @include mq-above(640) {
+//   .u-view__under--sm {
+//     display: none !important;
+//   }
+// }
+// @include mq-below(640) {
+//   .u-view__upper--sm {
+//     display: none !important;
+//   }
+// }
+// @include mq-above(768) {
+//   .u-view__under--md {
+//     display: none !important;
+//   }
+// }
+// @include mq-below(768) {
+//   .u-view__upper--md {
+//     display: none !important;
+//   }
+// }
+// @include mq-above(1024) {
+//   .u-view__under--lg {
+//     display: none !important;
+//   }
+// }
+// @include mq-below(1024) {
+//   .u-view__upper--lg {
+//     display: none !important;
+//   }
+// }
+// @include mq-above(1280) {
+//   .u-view__under-xl {
+//     display: none !important;
+//   }
+// }
+// @include mq-below(1280) {
+//   .u-view__upper--xl {
+//     display: none !important;
+//   }
+// }
+// @include mq-above(1536) {
+//   .u-view__under--2xl {
+//     display: none !important;
+//   }
+// }
+// @include mq-below(1536) {
+//   .u-view__upper--2xl {
+//     display: none !important;
+//   }
+// }

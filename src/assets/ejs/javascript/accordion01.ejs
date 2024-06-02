@@ -1,0 +1,64 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+  <script src="/assets/js/page/javascript/accordion01.js" defer></script>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+
+    <div class="accordion01">
+
+      <dl class="accordion">
+
+        <dt class="accordion__title">
+          <button type="button" class="accordion__button js-accordion">タイトル1</button>
+        </dt>
+        <dd class="accordion__desc">コンテンツ1</dd>
+
+        <dt class="accordion__title">
+          <button type="button" class="accordion__button js-accordion">タイトル2</button>
+        </dt>
+        <dd class="accordion__desc">コンテンツ2</dd>
+
+        <dt class="accordion__title">
+          <button type="button" class="accordion__button js-accordion">タイトル3</button>
+        </dt>
+        <dd class="accordion__desc">コンテンツ3</dd>
+
+      </dl>
+
+    </div>
+
+
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

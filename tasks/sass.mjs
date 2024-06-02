@@ -35,13 +35,15 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
       // Sassコンパイルオプションの設定
       const sassOptions = {
         loadPaths: [inputBaseDir], // @useなどのルールで読み込まれたスタイルシートを探すパス。ここがベースディレクトリとなる。
-        // sourceMap: true,       // ソースマップを無効にする（初期値：false）
+        sourceMap: true, // ソースマップを無効にする（初期値：false）、有効にすることで後ほど'sassCompileResult.sourceMap'が生成される。
+        sourceMapIncludeSources: true, // ソースファイルの内容をソースマップに含めるかどうか（初期値：false）
         // style: 'compressed', // 圧縮モード（初期値：expanded）
       };
 
       // もしmodeが「build」の場合、Sassの出力スタイルを圧縮モードに設定
       if (taskMode === 'build') {
         sassOptions.style = 'compressed';
+        sassOptions.sourceMap = false;
       }
 
       // sassファイルを一旦、sassGlobにかけて、その結果のファイルデータをsassコンパイルする流れ。
@@ -55,9 +57,21 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
       ];
 
       // PostCSSを使用してSassの出力にプラグインを適用し、結果を待機
+      // sassCompileResult.cssはコンパイルされた後のCSSデータのこと
+      // sassCompileResult.sourceMapはコンパイルされた後のCSSデータについてのソースマップのデータのこと
+      // postCSSが適用されたcssファイルがpostcssResult.cssになる
       const postcssResult = await postcss(postcssPlugins).process(sassCompileResult.css, {
-        from: undefined,
-      }); // ssResult.cssに対して行うsassResult.cssはsassコンパイルされた後のCSSデータのこと、 undefinedはソースマップ生成を無効、postCSSが適用されたcssファイルがpostcssResult.cssになる
+        from: undefined, // from: inputPathと比較して見た目上差がないようにみえたので、ひとまず'undefined'にした。
+
+        // buildモードの場合は、ソースマップを生成しない。
+        map:
+          taskMode === 'build'
+            ? false
+            : {
+                inline: true, // ソースマップをCSSファイル内に含める（初期値：false）
+                prev: sassCompileResult.sourceMap, // Sassから生成されたソースマップを引き継ぐ
+              },
+      });
 
       // 出力CSSファイルに結果を書き込み、完了を待機
       await new Promise((resolve, reject) => {
@@ -103,6 +117,7 @@ const sassTask = async ({ mode, watchEvent, watchPath }) => {
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const sassFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.scss'), {
       windowsPathsNoEscape: true,
+      ignore: '**/_*/**',
     });
 
     // 配列内の各Sassファイルパスを一つずつ取り出し順番にレンダリング（取り出したSassファイルパスは'sassFilePath'）

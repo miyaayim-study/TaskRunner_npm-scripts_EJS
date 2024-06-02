@@ -89,23 +89,28 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
 
   // 全てのファイルをビルド
   const allBuild = async () => {
-    // src/js内の全てのJSファイルを取得
+    //* 1：Eslintで構文チェックするファイルを取得
+    // src/js内の'_'で始まるディレクトリ名を除いた全てのJSファイルを取得
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const jsAllFilePathsPromise = glob(path.join(inputBaseDir, '**/*.js'), {
       windowsPathsNoEscape: true,
+      ignore: '**/_*/**',
     });
 
+    //* 2：ビルドするファイルを取得
     // src/js内の'_'で始まるディレクトリ名とファイル名を除いた全てのJSファイルを取得
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const jsFilePathsPromise = glob(path.join(inputBaseDir, '**/!(_)*.js'), {
       windowsPathsNoEscape: true,
+      ignore: '**/_*/**',
     });
 
     // jsAllFilePathsPromiseとjsFilePathsPromiseを並列実行して分割代入
     const [jsAllFilePaths, jsFilePaths] = await Promise.all([jsAllFilePathsPromise, jsFilePathsPromise]);
 
     // const [jsAllFilePaths, jsFilePaths]が終わってから下記を実行
-    // src/js内の全てのJSファイルを構文チェック
+
+    //* 1：src/js内の'_'で始まるディレクトリ名を除いた全てのJSファイルを構文チェック
     let eslintPromises;
     if (taskMode === 'build') {
       // buildモードならスタイルガイドに沿った文法チェックも行う
@@ -126,7 +131,7 @@ const jsTask = async ({ mode, watchEvent, watchPath }) => {
       });
     }
 
-    // src/js内の'_'で始まるファイル名を除いた全てのJSファイルを一つずつ取り出しビルドする
+    //* 2：src/js内の'_'で始まるディレクトリ名とファイル名を除いた全てのJSファイルを一つずつ取り出しビルドする
     const jsBuildPromises = jsFilePaths.map(async (jsFilePath) => {
       // 除外フォルダ内のファイルパスの場合はcopyJsFileを実行、それ以外はjsBuildを実行
       if (isInIgnoredDirectory(jsFilePath)) {

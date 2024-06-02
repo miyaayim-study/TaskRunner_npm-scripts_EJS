@@ -16,7 +16,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
   const inputBaseDir = dir.src.img;
   const outputBaseDir = dir.dist.img;
 
-  // WebPに変換可能な画像の圧縮処理内容
+  //* 3-1. WebPに変換可能な画像の圧縮処理内容
   const optimizeWebpConvertibleImages = async (srcPath, taskType) => {
     try {
       const imageminTask = async (inputPath) => {
@@ -36,18 +36,22 @@ const imgTask = async ({ watchEvent, watchPath }) => {
       };
 
       let inputPath;
+
+      //* 3-1-1. 全ファイルコピー（タスク開始時用）
       if (taskType == 'all') {
         const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
+
+      //* 3-1-2. 1つのファイルをコピー（監視タスク用）
       if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(jpg|jpeg|png)$/i;
         if (
           validExtensions.test(inputPath) &&
-          //  !path.basename(inputPath).startsWith('_')
+          /////  !path.basename(inputPath).startsWith('_')
           !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
@@ -62,7 +66,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
-  // WebPに変換不可能な画像の圧縮処理内容
+  //* 3-2. WebPに変換不可能な画像の圧縮処理内容
   const optimizeNonWebpImages = async (srcPath, taskType) => {
     try {
       const imageminTask = async (inputPath) => {
@@ -79,18 +83,22 @@ const imgTask = async ({ watchEvent, watchPath }) => {
       };
 
       let inputPath;
+
+      //* 3-2-1. 全ファイルコピー（タスク開始時用）
       if (taskType == 'all') {
         const extension = '.{gif,svg,GIF,SVG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
+
+      //* 3-2-2. 1つのファイルをコピー（監視タスク用）
       if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(gif|svg)$/i;
         if (
           validExtensions.test(inputPath) &&
-          //  !path.basename(inputPath).startsWith('_')
+          /////  !path.basename(inputPath).startsWith('_')
           !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
@@ -105,7 +113,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
-  // Webpファイル生成の処理内容
+  //* 3-3. Webpファイル生成の処理内容
   const generateWebpImages = async (srcPath, taskType) => {
     try {
       const imageminTask = async (inputPath) => {
@@ -121,18 +129,22 @@ const imgTask = async ({ watchEvent, watchPath }) => {
       };
 
       let inputPath;
+
+      //* 3-3-1. 全ファイルコピー（タスク開始時用）
       if (taskType == 'all') {
         const extension = '.{jpg,jpeg,png,JPG,JPEG,PNG}';
         inputPath = srcPath + extension;
         await imageminTask(inputPath);
       }
+
+      //* 3-3-2. 1つのファイルをコピー（監視タスク用）
       if (taskType == 'one') {
         inputPath = srcPath;
         // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
         const validExtensions = /\.(jpg|jpeg|png)$/i;
         if (
           validExtensions.test(inputPath) &&
-          //  !path.basename(inputPath).startsWith('_')
+          /////  !path.basename(inputPath).startsWith('_')
           !isExcludedPath({ basePath: inputBaseDir, targetPath: inputPath })
         ) {
           await imageminTask(inputPath);
@@ -147,7 +159,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
-  // 画像ファイル以外のファイルコピー処理内容
+  //* 3-4. 画像ファイル以外のファイルコピー処理内容（SVG、PDF等）
   const copyNotImages = async (srcPath, taskType) => {
     const copyNotImageFile = async ({ copyFilePath }) => {
       const inputPath = copyFilePath;
@@ -172,14 +184,14 @@ const imgTask = async ({ watchEvent, watchPath }) => {
       }
     };
 
-    // 全ファイルコピー（タスク開始時用）
+    //* 3-4-1. 全ファイルコピー（タスク開始時用）
     if (taskType == 'all') {
       // オプション内容について、
       // ignore：指定したディレクトリとディレクトリ配下のファイルを無視
       // nodir：ディレクトリにはマッチせず、ファイルにのみマッチする。
       // windowsPathsNoEscape：Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
-      const copyFilePaths = await glob(path.join(inputBaseDir, '!(_)**/!(_)*'), {
-        ignore: ['**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'],
+      const copyFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*'), {
+        ignore: ['**/_*/**', '**/*.{jpg,jpeg,png,gif,svg,JPG,JPEG,PNG,GIF,SVG}'],
         nodir: true,
         windowsPathsNoEscape: true,
       });
@@ -189,13 +201,13 @@ const imgTask = async ({ watchEvent, watchPath }) => {
       }
     }
 
-    // 1つのファイルをコピー（監視タスク用）
+    //* 3-4-2. 1つのファイルをコピー（監視タスク用）
     if (taskType == 'one') {
       // ファイル種類を識別するための正規表現、'i'の部分は大文字、小文字を区別しないという意味
       const validExtensions = /\.(jpg|jpeg|png|gif|svg)$/i;
       if (
         !validExtensions.test(watchPath) &&
-        //  !path.basename(srcPath).startsWith('_')
+        /////  !path.basename(srcPath).startsWith('_')
         !isExcludedPath({ basePath: inputBaseDir, targetPath: srcPath })
       ) {
         await copyNotImageFile({ copyFilePath: srcPath });
@@ -203,6 +215,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
+  //* 2-1. 画像最適化の実行
   // 画像最適化の出力モード説明
   // ・noWebp … Webp画像を生成しない。
   // ・useIfPossible … Webp画像を生成する。
@@ -213,15 +226,16 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     // const optimizationMode = 'fallback';
     try {
       switch (optimizationMode) {
+        // noWebp … Webp画像を生成しない。
         case 'noWebp':
           await Promise.all([
             optimizeWebpConvertibleImages(srcPath, taskType),
             optimizeNonWebpImages(srcPath, taskType),
             copyNotImages(srcPath, taskType),
           ]);
-
           break;
 
+        // useIfPossible … Webp画像を生成する。
         case 'useIfPossible':
           await Promise.all([
             generateWebpImages(srcPath, taskType),
@@ -230,6 +244,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           ]);
           break;
 
+        // fallback … 通常の圧縮画像生成とWebp画像生成の両方を行う。
         case 'fallback':
           await Promise.all([
             optimizeWebpConvertibleImages(srcPath, taskType),
@@ -252,7 +267,7 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     }
   };
 
-  // 監視イベントが削除の場合の処理内容
+  //* 2-2. 監視イベントが削除の場合の処理内容
   const deleteDist = async () => {
     const distPath = path.join(outputBaseDir, path.relative(inputBaseDir, watchPath));
     const extension = path.extname(watchPath); // 現在の拡張子を取得
@@ -266,15 +281,16 @@ const imgTask = async ({ watchEvent, watchPath }) => {
     ]);
   };
 
+  //* 1. 実行
   try {
-    // 監視タスクの監視イベントが削除の場合
+    //* 1-1. 実行監視タスクの監視イベントが削除の場合
     if (watchEvent === 'unlinkDir' || watchEvent === 'unlink') {
       // 監視イベントで削除を受け取った場合の処理
       await deleteDist();
 
-      // 削除の監視イベントを受け取らなかった場合
+      //* 1-2. 削除の監視イベントを受け取らなかった場合
     } else {
-      // 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみを圧縮（'_'で始まるディレクトリ名とファイル名は除く）
+      //* 1-2-1 監視タスクの監視イベントが追加・変更の場合、監視で検知した該当する拡張子ファイルのみを圧縮（'_'で始まるディレクトリ名とファイル名は除く）
       if (watchPath) {
         if (
           (watchEvent === 'add' || watchEvent === 'change') &&
@@ -285,9 +301,9 @@ const imgTask = async ({ watchEvent, watchPath }) => {
           await imageOptimizer(srcPath, taskType);
         }
 
-        // 監視タスク以外の場合は、全てのファイルを圧縮
+        //* 1-2-2. 監視タスク以外の場合は、全てのファイルを圧縮
       } else {
-        const srcPath = path.join(inputBaseDir, '!(_)**/!(_)*');
+        const srcPath = path.join(inputBaseDir, '**/!(_)*');
         const taskType = 'all';
         await imageOptimizer(srcPath, taskType);
       }

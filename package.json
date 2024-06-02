@@ -7,6 +7,7 @@
     "build": "node tasks/index.mjs build",
     "   ": "",
     "sharp": "node tasks/sharp.mjs",
+    "sass-test": "node tasks/sass-test.mjs",
     "": "",
     "build: html": "node tasks/index.mjs build_one html",
     "build: ejs": "node tasks/index.mjs build_one ejs",

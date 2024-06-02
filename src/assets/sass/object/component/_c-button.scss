@@ -1,0 +1,430 @@
+@use 'global' as *;
+
+.item01 {
+  .c-button {
+    width: fit-content;
+
+    &__link {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: whitesmoke;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+    }
+    &__arrow {
+      transition: transform 0.3s ease;
+
+      @include hover-child {
+        transform: translateX(8px);
+      }
+    }
+  }
+}
+
+.item02 {
+  .c-button {
+    width: fit-content;
+
+    &__link {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: black;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__arrow {
+      transition: 0.3s ease;
+      transition-property: transform, fill;
+
+      @include hover-child {
+        fill: white;
+        transform: translateX(8px);
+      }
+    }
+  }
+}
+
+.item03 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: whitesmoke;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+    }
+    &__arrow {
+      transition: transform 0.3s ease;
+
+      @include hover-child {
+        transform: translateX(8px);
+      }
+    }
+  }
+}
+
+.item04 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: black;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+      transition: color 0.3s ease;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__exlink {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+  }
+}
+
+.item05 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: black;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+      transition: color 0.3s ease;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__twitter {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+    &__exlink {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+  }
+}
+
+.item06 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      // &--icon-right {
+      //   grid-template-columns: 1fr auto;
+      // }
+      // &--icon-left {
+      //   grid-template-columns: auto 1fr;
+      // }
+      // &--icon-inline {
+      //   grid-template-columns: auto 1fr auto;
+      // }
+
+      &:has(:where(.c-button__icon--right)) {
+        grid-template-columns: 1fr auto;
+      }
+      &:has(:where(.c-button__icon--left)) {
+        grid-template-columns: auto 1fr;
+      }
+      &:has(:where(.c-button__icon--left)):has(:where(.c-button__icon--right)) {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      &--center {
+        justify-content: center;
+        grid-template-columns: none;
+      }
+
+      @include hover {
+        background-color: black;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+      transition: color 0.3s ease;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__twitter {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+    &__exlink {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+  }
+}
+
+.item07 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-template-areas: 'text text text text text';
+      grid-template-columns: auto 8px 1fr 24px auto;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      &:has(:where(.c-button__icon--right)) {
+        grid-template-areas: 'text text text . icon-right';
+      }
+      &:has(:where(.c-button__icon--left)) {
+        grid-template-areas: 'icon-left . text text text';
+      }
+      &:has(:where(.c-button__icon--left)):has(:where(.c-button__icon--right)) {
+        grid-template-areas: 'icon-left . text . icon-right';
+      }
+
+      &--center {
+        justify-content: center;
+        grid-template-columns: none;
+      }
+
+      @include hover {
+        background-color: black;
+      }
+    }
+    &__text {
+      grid-area: text;
+      line-height: 1.3;
+      transition: color 0.3s ease;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__icon--left {
+      grid-area: icon-left;
+    }
+    &__icon--right {
+      grid-area: icon-right;
+    }
+
+    &__twitter {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+    &__exlink {
+      transition: fill 0.3s ease;
+
+      @include hover-child {
+        fill: white;
+      }
+    }
+  }
+}
+
+.item08 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+
+    &__link {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+      transition: background-color 0.3s ease;
+
+      @include hover {
+        background-color: whitesmoke;
+      }
+    }
+    &__text {
+      line-height: 1.3;
+    }
+    &__icon-circle {
+      display: grid;
+      place-content: center;
+      width: 24px;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      border: 2px solid #000;
+      transition: transform 0.3s ease;
+
+      @include hover-child {
+        transform: translateX(8px);
+      }
+    }
+
+    &__arrow {
+      width: 12px;
+    }
+  }
+}
+
+.item09 {
+  .c-button {
+    display: grid;
+    max-width: 250px;
+    min-height: 52px;
+    overflow: hidden;
+
+    &__link {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 36px;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid black;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        transform: translateY(-50%);
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        aspect-ratio: 1 / 1;
+        background-color: #000;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+      @include hover {
+        &::before {
+          left: -250px;
+          right: -250px;
+        }
+      }
+    }
+    &__text {
+      line-height: 1.3;
+      transition: color 0.3s ease;
+
+      @include hover-child {
+        color: white;
+      }
+    }
+    &__icon-circle {
+      display: grid;
+      grid-column: 2;
+      grid-row: 1;
+      place-content: center;
+      width: 24px;
+      aspect-ratio: 1 / 1;
+      background-color: white;
+      border-radius: 50%;
+      border: 2px solid #000;
+      transition: transform 0.3s ease;
+
+      @include hover-child {
+        transform: translateX(8px);
+      }
+    }
+
+    &__arrow {
+      width: 12px;
+    }
+  }
+}

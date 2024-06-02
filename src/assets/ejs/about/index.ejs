@@ -6,8 +6,14 @@
 <html lang="ja">
 
 <head>
-  <%# ヘッド -%>
+  <%# メタデータ等 -%>
   <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
 </head>
 
 <body>
@@ -19,7 +25,7 @@
   <%# main -%>
   <main class="l-main">
     <h2>ABOUTページです。</h2>
-    <p><a href="/">TOPページはこちらをクリック</a></p>
+    <p><a href="/" class="test-link">TOPページはこちらをクリック</a></p>
   </main>
 
   <!-- <h3>
@@ -29,6 +35,7 @@
   <p class="js-test-html">HTMLファイル内に記述したJSで色変更</p>
   <p class="js-test-js-hoge">JSファイル内に記述したコードで色変更：hogeファイル</p>
   <p class="js-test-js-foo">JSファイル内に記述したコードで色変更：fooファイル</p>
+  <p class="js-test-js-bar">JSファイル内に記述したコードで色変更：barファイル（homeのみ）</p>
 
   <%# フッター -%>
   <%- include(`${ROOT}/_common/_footer.ejs`) %>
@@ -41,7 +48,6 @@
     };
     textColorChange();
   </script>
-  <%- include(`${ROOT}/_common/_script.ejs`) %>
 
 </body>
 

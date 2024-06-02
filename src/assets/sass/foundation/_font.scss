@@ -1,3 +1,4 @@
+//* 日本語フォント
 //* =====================================================================
 //* Noto Sans Japanese (Google Font)【ゴシック体】[通常]
 //* =====================================================================
@@ -87,12 +88,95 @@
 //* -------------------------------------------------------
 @font-face {
   font-family: 'Noto Sans JP';
-  src: url('/src/assets/font/Noto_Sans_JP/NotoSansJP-VariableFont_wght.ttf') format('truetype');
+  src: url('/assets/font/Noto_Sans_JP/NotoSansJP-VariableFont_wght.ttf') format('truetype');
   font-optical-sizing: auto;
   font-weight: 100 1000;
   font-stretch: 25% 151%;
 }
 
+//* =====================================================================
+//* Sawarabi Mincho（さわらび明朝） (Google Font)【明朝体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap");
+
+//* =====================================================================
+//* Shippori Mincho（しっぽり明朝） (Google Font)【明朝体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+JP&family=Sawarabi+Mincho&family=Shippori+Mincho&display=swap");
+
+//* =====================================================================
+//* Zen Old Mincho（ZENオールド明朝） (Google Font)【明朝体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho&display=swap");
+
+//* =====================================================================
+//* Kiwi Maru（キウイ丸） (Google Font)【丸ゴシック体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap");
+
+//* =====================================================================
+//* Zen Maru Gothic (Google Font)【丸ゴシック体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap");
+
+//* -------------------------------------------------------
+//* ローカル
+//* -------------------------------------------------------
+// @font-face {
+//   font-family: 'Zen Maru Gothic';
+//   src: url('/assets/font/Zen_Maru_Gothic/ZenMaruGothic-Light.ttf') format('truetype');
+//   font-weight: 300;
+//   font-style: normal;
+// }
+// @font-face {
+//   font-family: 'Zen Maru Gothic';
+//   src: url('/assets/font/Zen_Maru_Gothic/ZenMaruGothic-Regular.ttf') format('truetype');
+//   font-weight: 400;
+//   font-style: normal;
+// }
+// @font-face {
+//   font-family: 'Zen Maru Gothic';
+//   src: url('/assets/font/Zen_Maru_Gothic/ZenMaruGothic-Medium.ttf') format('truetype');
+//   font-weight: 500;
+//   font-style: normal;
+// }
+// @font-face {
+//   font-family: 'Zen Maru Gothic';
+//   src: url('/assets/font/Zen_Maru_Gothic/ZenMaruGothic-Bold.ttf') format('truetype');
+//   font-weight: 700;
+//   font-style: normal;
+// }
+// @font-face {
+//   font-family: 'Zen Maru Gothic';
+//   src: url('/assets/font/Zen_Maru_Gothic/ZenMaruGothic-Black.ttf') format('truetype');
+//   font-weight: 900;
+//   font-style: normal;
+// }
+
+//* =====================================================================
+//* M PLUS 1p (Google Font)【丸ゴシック体】
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=M+PLUS+1p&display=swap");
+
+//* 欧米フォント
 //* =====================================================================
 //* Roboto (Google Font)【ゴシック体】[通常]
 //* =====================================================================
@@ -141,6 +225,7 @@
 //   font-style: normal;
 // }
 
+//* 欧米フォント
 //* =====================================================================
 //* Roboto (Google Font)【ゴシック体】[バリアブルフォント]
 //* =====================================================================
@@ -160,3 +245,23 @@
   font-weight: 100 1000;
   font-stretch: 25% 151%;
 }
+
+//* 欧米フォント
+//* =====================================================================
+//* Quicksand (Google Font)【丸ゴシック体】[バリアブルフォント]
+//* =====================================================================
+//* -------------------------------------------------------
+//* CDN
+//* -------------------------------------------------------
+// @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+
+//* -------------------------------------------------------
+//* ローカル
+//* -------------------------------------------------------
+// @font-face {
+//   font-family: "Quicksand";
+//   src: url("/assets/font/Quicksand/Quicksand-VariableFont_wght.ttf")
+//     format("truetype-variations");
+//   font-weight: 100 1000;
+//   font-stretch: 25% 151%;
+// }

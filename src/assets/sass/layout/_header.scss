@@ -1,6 +1,7 @@
 @use 'global' as *;
 
 .l-header {
-  color: red;
-  font-size: to-rem(16);
+  min-height: 100px;
+  border: 1px solid #000;
+  margin-bottom: 100px;
 }

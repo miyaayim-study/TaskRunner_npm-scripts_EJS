@@ -1,17 +1,14 @@
 // 追加したリセットCSS
-
-// [role="button"],
-// [type="button"],
-// [type="reset"],
-// [type="submit"],
-// button {
-//   color: inherit;
-// }
-
 html {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+*,
+:after,
+:before {
+  box-sizing: border-box;
 }
 
 // body {
@@ -34,15 +31,15 @@ h6 {
 }
 
 // 見出しやインタラクティブ要素のline-heightを設定
-h1,
-h2,
-h3,
-h4,
-button,
-input,
-label {
-  line-height: 1.2;
-}
+// h1,
+// h2,
+// h3,
+// h4,
+// button,
+// input,
+// label {
+//   line-height: 1.2;
+// }
 
 // ul,
 // ol {
@@ -85,11 +82,45 @@ img {
   vertical-align: bottom;
 }
 
-// inputやbuttonなどのfontは継承
-// input, button,
-// textarea, select {
-//   font: inherit;
-// }
+// キーボード操作でフォーカス時に輪郭線を表示（リセットCSSで非表示にされているため）
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-width: initial;
+}
+
+// inputやbuttonなどのfontは継承 input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+// buttonのリセット
+button {
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-shadow: inherit;
+  text-rendering: inherit;
+  word-spacing: inherit;
+  text-indent: inherit;
+  align-items: inherit;
+  padding-block: inherit;
+  padding-inline: inherit;
+  border-width: inherit;
+  border-color: inherit;
+  border-image: inherit;
+}
+
+[role='button'],
+[type='button'],
+[type='reset'],
+[type='submit'],
+button {
+  color: inherit;
+}
 
 // rows属性のないtextareasが小さくならないようにする
 // textarea:not([rows]) {

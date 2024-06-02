@@ -1,0 +1,89 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+  <script src="/assets/js/page/javascript/tab01.js" defer></script>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+
+    <div class="tab">
+      <p>タブ切り替え1</p>
+      <ul class="tab__menu js-tab-triggers" data-triggers="01">
+        <li class="tab__menu-item is-active"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ1</button></li>
+        <li class="tab__menu-item"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ2</button></li>
+        <li class="tab__menu-item"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ3</button></li>
+      </ul>
+
+      <ul class="tab__contents js-tab-targets" data-targets="01">
+        <li class="tab__contents-item js-tab-target is-show">パネル1</li>
+        <li class="tab__contents-item js-tab-target">パネル2</li>
+        <li class="tab__contents-item js-tab-target">パネル3</li>
+      </ul>
+    </div>
+
+
+    <div class="tab">
+      <p>タブ切り替え2</p>
+      <ul class="tab__menu js-tab-triggers" data-triggers="02">
+        <li class="tab__menu-item is-active"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ1</button></li>
+        <li class="tab__menu-item"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ2</button></li>
+        <li class="tab__menu-item"><button type="button" class="tab__menu-item__button js-tab-trigger">タブ3</button></li>
+      </ul>
+
+      <ul class="tab__contents js-tab-targets" data-targets="02">
+        <li class="tab__contents-item js-tab-target is-show">パネル1</li>
+        <li class="tab__contents-item js-tab-target">パネル2</li>
+        <li class="tab__contents-item js-tab-target">パネル3</li>
+      </ul>
+    </div>
+
+
+
+
+
+    <!-- <div class="tab">
+      <p>タブ切り替え1</p>
+      <ul class="tabs js-tabs" data-tabs="01" role="tablist">
+        <li class="tab-item is-active" role="tab" aria-controls="contents1"><button type="button">タブ1</button></li>
+        <li class="tab-item" role="tab" aria-controls="contents2"><button type="button">タブ2</button></li>
+        <li class="tab-item" role="tab" aria-controls="contents3"><button type="button">タブ3</button></li>
+      </ul>
+      <ul class="contentss js-contentss" data-contentss="01">
+        <li class="contents-item is-show" id="contents1" role="tabcontents">パネル1</li>
+        <li class="contents-item" id="contents2" role="tabcontents">パネル2</li>
+        <li class="contents-item" id="contents3" role="tabcontents">パネル3</li>
+      </ul>
+    </div> -->
+
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

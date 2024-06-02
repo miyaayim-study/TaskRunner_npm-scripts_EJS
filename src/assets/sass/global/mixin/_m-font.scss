@@ -1,0 +1,40 @@
+@use '../variables/' as *;
+@use '../function/' as *;
+@use 'm-media' as *;
+
+//* -------------------------------------------------------
+//* テキスト上下のline-heightの除去
+//* -------------------------------------------------------
+// 【使用例】
+// .element {
+//   line-height: 2;
+//   @include lhCrop(2);
+// }
+
+// 基本
+@mixin lhCrop($line-height) {
+  &::before {
+    content: '';
+    display: table;
+    margin-bottom: calc((1 - #{$line-height}) * 0.5em);
+  }
+  &::after {
+    content: '';
+    display: table;
+    margin-top: calc((1 - #{$line-height}) * 0.5em);
+  }
+}
+
+// フォントによって上下余白割合が違うので、場合に応じて下記のように調整する
+@mixin lhCropFontFamilyName($line-height) {
+  &::before {
+    content: '';
+    display: table;
+    margin-bottom: calc((0.7 - #{$line-height}) * 0.5em);
+  }
+  &::after {
+    content: '';
+    display: table;
+    margin-top: calc((1 - #{$line-height}) * 0.5em);
+  }
+}

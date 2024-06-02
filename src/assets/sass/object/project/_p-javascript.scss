@@ -1,0 +1,71 @@
+@use 'global' as *;
+
+.tab:not(:first-child) {
+  margin-top: 60px;
+}
+
+.tab__menu-item.is-active {
+  color: red;
+}
+.tab__contents-item:not(.is-show) {
+  display: none;
+}
+
+.tab__title.is-active {
+  color: red;
+}
+.tab__desc:not(.is-show) {
+  display: none;
+}
+
+.accordion {
+  width: 200px;
+}
+.accordion:not(:first-child) {
+  margin-top: 60px;
+}
+.accordion__title {
+  background-color: lightpink;
+  &.is-active {
+    // color: red;
+  }
+}
+.accordion__button {
+  display: block;
+  width: 100%;
+}
+.accordion__desc {
+  background-color: lightblue;
+  &:not(.is-show) {
+    // display: none;
+  }
+}
+
+.accordion01 {
+  & .accordion__title {
+    &.is-active {
+      color: red;
+    }
+  }
+
+  & .accordion__desc {
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:not(.is-show) {
+      grid-template-rows: minmax(0, 0fr);
+    }
+  }
+}
+
+.js-toggle__panel {
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(0, 0fr);
+  transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js-toggle__panel[aria-hidden='false'] {
+  grid-template-rows: minmax(0, 1fr);
+}

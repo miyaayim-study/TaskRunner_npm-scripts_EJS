@@ -1,0 +1,261 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+    <h2>BUTTONページです。</h2>
+    <p><a href="/" class="test-link">TOPページはこちらをクリック</a></p>
+
+
+    <div class="button-container">
+      <div class="container-item">
+        <p>テキスト量に合わせて横幅自動調整</p>
+        <ul class="button-list">
+          <li class="button-item item01">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__arrow c-svg-arrow-right">
+                  <use href="#svg-arrow-right" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item02">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__arrow c-svg-arrow-right">
+                  <use href="#svg-arrow-right" />
+                </svg>
+              </a>
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="container-item">
+        <p>高さ指定、横幅指定</p>
+        <ul class="button-list">
+          <li class="button-item item03">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__arrow c-svg-arrow-right">
+                  <use href="#svg-arrow-right" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item04">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item05">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <svg class="c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="container-item">
+        <p>クラス名の付与で全パターン対応</p>
+        <ul class="button-list">
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__icon--right c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link ">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__icon--right c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link c-button__link--center">
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item06">
+            <p class="c-button">
+              <a href="#" class="c-button__link c-button__link--center">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="container-item">
+        <p>gapとmarginを使用せずに余白調整</p>
+        <ul class="button-list">
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__icon--right c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+                <svg class="c-button__icon--right c-button__exlink c-svg-arrow-up-right-from-square">
+                  <use href="#svg-arrow-up-right-from-square" />
+                </svg>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link c-button__link--center">
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item07">
+            <p class="c-button">
+              <a href="#" class="c-button__link c-button__link--center">
+                <svg class="c-button__icon--left c-button__twitter c-svg-square-x-twitter">
+                  <use href="#svg-square-x-twitter" />
+                </svg>
+                <span class="c-button__text">ボタンテキスト</span>
+              </a>
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="container-item">
+        <p>丸アイコン</p>
+        <ul class="button-list">
+          <li class="button-item item08">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <span class="c-button__icon-circle">
+                  <svg class="c-button__arrow c-svg-arrow-right">
+                    <use href="#svg-arrow-right" />
+                  </svg>
+                </span>
+              </a>
+            </p>
+          </li>
+          <li class="button-item item09">
+            <p class="c-button">
+              <a href="#" class="c-button__link">
+                <span class="c-button__text">ボタンテキスト</span>
+                <span class="c-button__icon-circle">
+                  <svg class="c-button__arrow c-svg-arrow-right">
+                    <use href="#svg-arrow-right" />
+                  </svg>
+                </span>
+              </a>
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

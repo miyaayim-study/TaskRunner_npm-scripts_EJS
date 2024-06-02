@@ -1,0 +1,56 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+  <script src="/assets/js/page/javascript/accordion03.js" defer></script>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+
+
+    <dl class="accordion js-accordion">
+
+      <dt class="accordion__title">
+        <button type="button" id="toggle-button-1" class="accordion__button js-toggle__button" aria-expanded="false" aria-controls="toggle-1">タイトル1</button>
+      </dt>
+      <dd class="accordion__desc">
+        <div class="js-toggle__panel" id="toggle-1" role="region" aria-hidden="true" aria-labelledby="toggle-button-1">コンテンツ1</div>
+      </dd>
+
+
+
+    </dl>
+
+
+
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

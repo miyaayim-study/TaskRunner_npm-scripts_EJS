@@ -1,0 +1,194 @@
+@use 'sass:map';
+@use 'sass:math';
+@use '../variables/' as *;
+
+//* -------------------------------------------------------
+//* レスポンシブ
+//* -------------------------------------------------------
+
+//? ----------------------------------------------
+//? デスクトップファースト
+//? ----------------------------------------------
+// ○○px以下の指定
+@mixin mq($breakpoint) {
+  @if map-has-key($viewportList, $breakpoint) {
+    @media (width <= #{map.get($viewportList, $breakpoint)}px) {
+      @content;
+    }
+  } @else {
+    @error "指定されたブレイクポイントの変数は定義されていません。" + "指定できる変数は次のとおりです。 => #{map.keys($viewportList)}";
+  }
+}
+
+// ○○px以上の指定
+@mixin mq-not($breakpoint) {
+  @if map-has-key($viewportList, $breakpoint) {
+    @media not all and (width <= #{map.get($viewportList, $breakpoint)}px) {
+      @content;
+    }
+  } @else {
+    @error "指定されたブレイクポイントの変数は定義されていません。" + "指定できる変数は次のとおりです。 => #{map.keys($viewportList)}";
+  }
+}
+
+//? ----------------------------------------------
+//? モバイルファースト
+//? ----------------------------------------------
+// // ○○px以上の指定
+// @mixin mq($breakpoint) {
+//   @if map-has-key($viewportList, $breakpoint) {
+//     @media (width > #{map.get($viewportList, $breakpoint)}px) {
+//       @content;
+//     }
+//   } @else {
+//     @error "指定されたブレイクポイントの変数は定義されていません。" + "指定できる変数は次のとおりです。 => #{map.keys($viewportList)}";
+//   }
+// }
+
+// // ○○px未満の指定
+// @mixin mq-not($breakpoint) {
+//   @if map-has-key($viewportList, $breakpoint) {
+//     @media not all and (width > #{map.get($viewportList, $breakpoint)}px) {
+//       @content;
+//     }
+//   } @else {
+//     @error "指定されたブレイクポイントの変数は定義されていません。" + "指定できる変数は次のとおりです。 => #{map.keys($viewportList)}";
+//   }
+// }
+
+//? ----------------------------------------------
+//? 共通
+//? ----------------------------------------------
+// ○○px～○○pxの間の指定
+// stylelintで警告の誤動作を起こすため、この範囲のみ一部のstylelintのルールから除外している。
+/* stylelint-disable media-feature-name-no-unknown */
+@mixin mq-between($breakpointStart, $breakpointEnd) {
+  @if map-has-key($viewportList, $breakpointEnd) {
+    @media (#{map.get($viewportList, $breakpointStart)}px < width <= #{map.get($viewportList, $breakpointEnd)}px) {
+      @content;
+    }
+  } @else {
+    @error "指定されたブレイクポイントの変数は定義されていません。" + "指定できる変数は次のとおりです。 => #{map.keys($viewportList)}";
+  }
+}
+/* stylelint-enable media-feature-name-no-unknown */
+
+//? ----------------------------------------------
+//? その他
+//? ----------------------------------------------
+// max-width,min-width感覚でメディアクエリしたい場合
+// @mixin mq-min($breakpoint) {
+//   @media (min-width: #{$breakpoint}px) {
+//     @content;
+//   }
+// }
+// @mixin mq-max($breakpoint) {
+//   @media (max-width: #{$breakpoint}px) {
+//     @content;
+//   }
+// }
+// @mixin mq-minmax($breakpoint) {
+//   @media (min-width: #{$breakpointMin}px) and (max-width: #{$breakpointMax}px) {
+//     @content;
+//   }
+// }
+
+//* -------------------------------------------------------
+//* ユーザーアクション
+//* -------------------------------------------------------
+
+// hover
+@mixin hover {
+  @media (any-hover: hover) {
+    &:where(:any-link, :enabled, summary):hover {
+      @content;
+    }
+  }
+}
+
+@mixin hover-child {
+  @media (any-hover: hover) {
+    &:is(:where(:any-link, :enabled, summary):hover *) {
+      @content;
+    }
+  }
+}
+
+@mixin hover-normal {
+  @media (any-hover: hover) {
+    @content;
+  }
+}
+
+// hover & active
+// @mixin hover-active {
+//   @media (any-hover: hover) {
+//     &:where(:any-link, :enabled, summary):hover {
+//       @content;
+//     }
+//   }
+//   @media (any-hover: none) {
+//     &:where(:any-link, :enabled, summary):active {
+//       @content;
+//     }
+//   }
+// }
+
+// hover & Touch
+// @mixin touch {
+//   &:where(:any-link, :enabled, summary):hover {
+//     @content;
+//   }
+// }
+
+// @mixin mq-test($widthContent) {
+
+//   $X: math.div($widthContent, (1 - 0.1));
+//   $Y: math.div(($X - $widthContent),2);
+//   $breakpoint: $widthContent + $Y;
+//   @media (max-width: #{$breakpoint}px) {
+//     @content;
+//   }
+// }
+
+//* -------------------------------------------------------
+//* 画像のRatina（高解像度）ディスプレイへの対応
+//* -------------------------------------------------------
+/* stylelint-disable media-feature-name-no-unknown */
+@mixin retina {
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (min--moz-device-pixel-ratio: 2),
+    only screen and (-o-min-device-pixel-ratio: 2 / 1),
+    only screen and (min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx) {
+    @content;
+  }
+}
+/* stylelint-enable media-feature-name-no-unknown */
+
+//* -------------------------------------------------------
+//* コンテンツを片方に寄せる
+//* -------------------------------------------------------
+@mixin extra($property, $value, $maxWidthContent) {
+  #{$property}: calc(((100vw - var(--scrollbarWidth)) - $maxWidthContent) / 2);
+
+  @if str-index(#{$value}, 'px') {
+    $totalValue: $value * 2;
+    $breakpoint: $maxWidthContent + $totalValue;
+    @media (max-width: $breakpoint) {
+      #{$property}: #{$value};
+    }
+  } @else if str-index(#{$value}, '%') {
+    $totalValue: $value * 2;
+    $percent: 100% - $totalValue;
+    $percent_as_number: math.div($percent, 100%);
+    $breakpoint: math.div($maxWidthContent, $percent_as_number);
+    // $breakpoint: $breakpoint + var(--scrollbarWidth);
+    @media (max-width: $breakpoint) {
+      #{$property}: #{$value};
+    }
+  } @else {
+    @error "指定された値、単位が正しくありません。指定できる値、単位は次のとおりです。 => extra(プロパティ名, 値[px, %], 最大コンテンツ幅)";
+  }
+}

@@ -1,0 +1,118 @@
+@use 'global' as *;
+
+//* -------------------------------------------------------
+//* フルブリード・レイアウト
+//* -------------------------------------------------------
+
+.layout-container {
+  --padding-side: 120px;
+  --contents-wide-m: 1200px;
+
+  @include mq(md) {
+    --padding-side: 60px;
+  }
+
+  position: relative;
+  display: grid;
+  gap: 16px;
+  padding-block: 70px;
+
+  &::before {
+    content: '横幅1200px';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+    width: var(--contents-wide-m);
+    height: 90%;
+    margin-inline: auto;
+    background-color: lightgoldenrodyellow;
+  }
+  &::after {
+    content: '横幅maxから左右の余白分をマイナス';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: -2;
+    transform: translateX(-50%);
+    max-width: calc(100% - var(--padding-side) * 2);
+    width: 100%;
+    height: 100%;
+    margin-inline: auto;
+    background-color: lightpink;
+  }
+  & > * + * {
+    margin-top: 50px;
+  }
+
+  .layout-list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .flex {
+    .c-inner {
+      width: calc(100% - var(--padding-side) * 2);
+      max-width: var(--contents-wide-m);
+      margin-inline: auto;
+      height: 100px;
+      background-color: #ccc;
+      border: 2px solid #000;
+
+      &.not {
+        margin-top: 30px;
+        background-color: transparent;
+        border: none;
+        border-top: 1px solid #000;
+      }
+    }
+    @include mq-not(md) {
+      .left {
+        width: calc(100% - var(--padding-side));
+        max-width: calc((var(--contents-wide-m) / 2) + 50%);
+        margin: 0;
+      }
+      .right {
+        width: calc(100% - var(--padding-side));
+        max-width: calc((var(--contents-wide-m) / 2) + 50%);
+        margin-left: auto;
+        margin-right: 0;
+      }
+    }
+  }
+
+  .grid {
+    .c-inner {
+      display: grid;
+      grid-template-columns: minmax(var(--padding-side), 1fr) minmax(auto, var(--contents-wide-m)) minmax(
+          var(--padding-side),
+          1fr
+        );
+      row-gap: 16px;
+
+      & > * {
+        grid-column: 2 / -2;
+      }
+    }
+    @include mq-not(md) {
+      & .left {
+        grid-column: 1 / -2;
+      }
+      & .right {
+        grid-column: 2 / -1;
+      }
+    }
+
+    .c-block {
+      height: 100px;
+      background-color: #ccc;
+      border: 2px solid #000;
+    }
+    & .mini {
+      width: 100%;
+      max-width: 600px;
+      justify-self: center;
+    }
+  }
+}

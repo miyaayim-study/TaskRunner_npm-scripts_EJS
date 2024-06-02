@@ -108,6 +108,7 @@ const ejsTask = async ({ mode, watchEvent, watchPath }) => {
     // オプション内容は、Windowsスタイルのパスセパレータを有効にする設定（通常、windowsのパス区切り文字であるバックスラッシュがglobでは使えないが、'true'にすることでそれを使えるようにする）
     const ejsFilePaths = await glob(path.join(inputBaseDir, '**/!(_)*.ejs'), {
       windowsPathsNoEscape: true,
+      ignore: '**/_*/**',
     });
 
     // 配列内の各EJSファイルパスを一つずつ取り出し順番にレンダリング（取り出したEJSファイルパスは'ejsFilePath'）

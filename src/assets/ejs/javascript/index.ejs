@@ -1,0 +1,45 @@
+<% const ROOT = `${process.cwd()}/src/assets/ejs`; -%>
+<%# ページIDを入力する -%>
+<% pageId = 'about'; %>
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%# メタデータ等 -%>
+  <%- include(`${ROOT}/_common/_head.ejs`) %>
+
+  <%# CSS -%>
+  <%- include(`${ROOT}/_common/_link.ejs`) %>
+
+  <%# JavaScripts -%>
+  <%- include(`${ROOT}/_common/_script.ejs`) %>
+</head>
+
+<body>
+  <%# 共通SVG画像 -%>
+  <%- include(`${ROOT}/_modules/_svg.ejs`) %>
+
+  <%# ヘッダー -%>
+  <%- include(`${ROOT}/_common/_header.ejs`) %>
+
+  <%# メイン -%>
+  <%# main -%>
+  <main class="l-main">
+
+    <p><a href="./tab01.html" class="test-link">tab01ページはこちらをクリック</a></p>
+    <p><a href="./tab02.html" class="test-link">tab02ページはこちらをクリック</a></p>
+    <p><a href="./tab02-2.html" class="test-link">tab02-2ページはこちらをクリック</a></p>
+    <p><a href="./accordion01.html" class="test-link">accordion01ページはこちらをクリック</a></p>
+    <p><a href="./accordion02.html" class="test-link">accordion02ページはこちらをクリック</a></p>
+    <p><a href="./accordion03.html" class="test-link">accordion03ページはこちらをクリック</a></p>
+
+  </main>
+
+
+  <%# フッター -%>
+  <%- include(`${ROOT}/_common/_footer.ejs`) %>
+
+</body>
+
+</html>

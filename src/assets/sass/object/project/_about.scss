@@ -1,9 +1,1 @@
 @use 'global' as *;
-
-.test-link {
-  border: 1px solid #000;
-  @include hover {
-    color: #fff;
-    background-color: #000;
-  }
-}

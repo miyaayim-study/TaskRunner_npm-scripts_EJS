@@ -1,0 +1,12 @@
+@use 'global' as *;
+
+.button-container {
+  display: grid;
+  gap: 16px;
+  padding: 50px 100px;
+}
+
+.button-list {
+  display: grid;
+  gap: 16px;
+}
